@@ -4,7 +4,7 @@ import { authFetch } from './utils/authFetch'; // Importamos authFetch para regi
 import Spinner from './Spinner'; // Asumo que tienes un componente Spinner
 
 // 💡 Defino el endpoint de registro aquí, usando authFetch para resolver la URL base
-const REGISTER_ENDPOINT = '/auth/register'; 
+const REGISTER_ENDPOINT = '/api/auth/register'; 
 
 function AuthPanel() {
     // Obtenemos la función login del contexto (que ahora maneja la llamada a la API, el token y el rol)
