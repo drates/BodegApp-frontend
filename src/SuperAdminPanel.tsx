@@ -74,7 +74,7 @@ function SuperAdminPanel() {
             setLoading(true);
             setError(null);
             try {
-                const data: MetricsData = await authFetch("http://localhost:5000/superadmin/metricas", {
+                const data: MetricsData = await authFetch("/superadmin/metricas", {
                     method: "GET"
                 });
 
