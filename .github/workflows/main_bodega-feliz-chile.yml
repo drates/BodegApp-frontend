@@ -61,5 +61,6 @@ jobs:
         with:
           app-name: 'bodega-feliz-chile'
           slot-name: 'Production'
-          package: .
+          package: ./dist
+
           
