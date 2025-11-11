@@ -16,6 +16,8 @@
   },
   "mimeTypes": {
     ".js": "text/javascript",
-    ".mjs": "text/javascript"
+    ".mjs": "text/javascript",
+    ".ts": "text/javascript",
+    ".tsx": "text/javascript"
   }
 }
