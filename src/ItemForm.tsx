@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authFetch } from './utils/authFetch';
+import Spinner from './Spinner'; // Asumo que tienes un Spinner para el estado de carga
 
 type Props = {
     onItemCreated: () => void;
@@ -11,6 +12,7 @@ function ItemForm({ onItemCreated }: Props) {
     const [boxes, setBoxes] = useState(0);
     const [unitsPerBox, setUnitsPerBox] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // Estado de carga local
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,126 +31,166 @@ function ItemForm({ onItemCreated }: Props) {
             unitsPerBox
         };
 
+        setIsLoading(true);
+
         try {
             console.log("Enviando a /ingreso:", newItem);
 
             // 1. Ejecutar el POST de Ingreso
-            await authFetch("/ingreso", {
+            // 🛑 CORRECCIÓN: Usar ruta RELATIVA. authFetch manejará la URL base.
+            const response = await authFetch("/ingreso", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newItem)
             });
             
-            // 🚨 ELIMINACIÓN CRÍTICA: Se eliminó la doble llamada GET a /itembatches 
-            // y la línea localStorage.setItem("cachedInventory", ...)
-            
-            // 2. Limpiar formulario
-            setProductCode('');
-            setName('');
-            setBoxes(0);
-            setUnitsPerBox(0);
-
-            // 3. Notificar a Home.tsx para que recargue ItemList y HistorialMovimientos
-            onItemCreated(); 
-
-        } catch (err: any) {
-            console.error("Error de red o servidor:", err);
-            const msg = err.message || "";
-            if (msg.includes("nombre del producto")) {
-                setErrorMessage("Este producto no existe en nuestra base de datos. Por favor agregue un nombre del producto para ingresar la entrada.");
+            // Si llegamos aquí, la respuesta es 2xx
+            if (response.ok) {
+                // Limpiar campos después de una operación exitosa
+                setProductCode('');
+                setName('');
+                setBoxes(0);
+                setUnitsPerBox(0);
+                
+                // Notificar al componente padre que se ha creado un nuevo item/movimiento
+                onItemCreated(); 
             } else {
-                setErrorMessage("Error al ingresar el producto.");
+                 // Si response.ok es false (lo cual authFetch debería haber manejado, pero por si acaso)
+                 setErrorMessage("Error desconocido al registrar el ingreso.");
             }
+
+        } catch (error: any) {
+            // Manejo de errores de red o errores lanzados por authFetch (ej: 400 Bad Request)
+            setErrorMessage(`Error al registrar ingreso: ${error.message || 'Error de comunicación con el servidor.'}`);
+        } finally {
+            setIsLoading(false);
         }
     };
+    
+    // Estilos simples para el formulario
+    const formStyle: React.CSSProperties = {
+        padding: '20px', 
+        border: '1px solid #ddd', 
+        borderRadius: '8px', 
+        maxWidth: '600px', 
+        margin: '20px auto',
+        backgroundColor: '#d4edda', // Fondo sutil para ingreso (verde claro)
+        boxShadow: '0 4px 8px rgba(0,0,0,0.05)'
+    };
+    
+    const inputContainerStyle: React.CSSProperties = {
+        marginBottom: '1rem', 
+        display: 'flex', 
+        flexDirection: 'column'
+    };
+    
+    const labelStyle: React.CSSProperties = { 
+        display: 'block', 
+        marginBottom: '0.25rem', 
+        fontWeight: 'bold' 
+    };
+    
+    const inputElementStyle: React.CSSProperties = { 
+        width: '100%', // Usar 100% para adaptabilidad
+        padding: '0.6rem', 
+        borderRadius: '4px', 
+        border: '1px solid #ccc',
+        boxSizing: 'border-box' // Asegurar que padding no aumente el width
+    };
+    
+    const submitButtonStyle: React.CSSProperties = {
+        padding: '0.6rem 1.2rem',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: isLoading ? 'not-allowed' : 'pointer'
+    };
+
 
     return (
-        <div>
-            <form
-                onSubmit={handleSubmit}
-                style={{
-                    marginBottom: '2rem',
-                    padding: '1.5rem',
-                    borderRadius: '8px',
-                    backgroundColor: '#fff',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    border: '1px solid #e0e0e0'
-                }}
-            >
-                <h3 style={{ marginBottom: '1rem' }}>Ingreso de Entradas</h3>
+        <div style={{ textAlign: 'center' }}>
+            <form onSubmit={handleSubmit} style={formStyle}>
+                <h2 style={{ color: '#007bff', borderBottom: '2px solid #007bff', paddingBottom: '10px', marginBottom: '20px' }}>
+                    <span role="img" aria-label="icono-entrada" style={{marginRight: '10px'}}>⬆️</span>
+                    Ingresar Nuevo Stock (Entrada)
+                </h2>
 
-                {/* Código de formulario sin cambios */}
-                <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                        Código del Producto:
+                {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando ingreso...</div>}
+
+                <div style={inputContainerStyle}>
+                    <label style={labelStyle}>
+                        Código de Producto:
                     </label>
                     <input
                         type="text"
-                        placeholder="Código del producto"
+                        placeholder="Ej: ART-001"
                         value={productCode}
                         onChange={e => setProductCode(e.target.value)}
                         required
-                        style={{ width: '70%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={inputElementStyle}
                     />
                 </div>
 
-                <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                        Nombre del Producto (opcional si ya existe):
+                <div style={inputContainerStyle}>
+                    <label style={labelStyle}>
+                        Nombre del Producto:
                     </label>
                     <input
                         type="text"
-                        placeholder="Nombre del producto"
+                        placeholder="Nombre descriptivo"
                         value={name}
                         onChange={e => setName(e.target.value)}
-                        style={{ width: '70%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                        required
+                        style={inputElementStyle}
                     />
+                </div>
+                
+                <div style={{ display: 'flex', gap: '20px' }}>
+                    {/* Contenedor de Cajas */}
+                    <div style={{ ...inputContainerStyle, flex: 1 }}>
+                        <label style={labelStyle}>
+                            Cajas a ingresar:
+                        </label>
+                        <input
+                            type="number"
+                            placeholder="Cantidad de cajas"
+                            value={boxes}
+                            onChange={e => setBoxes(Number(e.target.value))}
+                            required
+                            min="1"
+                            style={inputElementStyle}
+                        />
+                    </div>
+                
+                    {/* Contenedor de Unidades por Caja */}
+                    <div style={{ ...inputContainerStyle, flex: 1 }}>
+                        <label style={labelStyle}>
+                            Unidades por caja:
+                        </label>
+                        <input
+                            type="number"
+                            placeholder="Unidades por caja"
+                            value={unitsPerBox}
+                            onChange={e => setUnitsPerBox(Number(e.target.value))}\
+                            required
+                            min="1"
+                            style={inputElementStyle}
+                        />
+                    </div>
                 </div>
 
-                <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                        Cajas:
-                    </label>
-                    <input
-                        type="number"
-                        placeholder="Cajas"
-                        value={boxes}
-                        onChange={e => setBoxes(Number(e.target.value))}
-                        required
-                        style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                        Unidades por caja:
-                    </label>
-                    <input
-                        type="number"
-                        placeholder="Unidades por caja"
-                        value={unitsPerBox}
-                        onChange={e => setUnitsPerBox(Number(e.target.value))}
-                        required
-                        style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
-                </div>
 
                 <button
                     type="submit"
-                    style={{
-                        padding: '0.6rem 1.2rem',
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
+                    disabled={isLoading}
+                    style={submitButtonStyle}
                 >
-                    Ingresar Entrada al Inventario
+                    {isLoading ? 'Procesando...' : 'Ingresar Entrada al Inventario'}
                 </button>
 
                 {errorMessage && (
-                    <p style={{ color: 'red', marginTop: '1rem' }}>{errorMessage}</p>
+                    <p style={{ color: 'red', marginTop: '1rem', fontWeight: 'bold' }}>{errorMessage}</p>
                 )}
             </form>
         </div>

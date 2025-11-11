@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Spinner from './Spinner';
 import { authFetch } from './utils/authFetch';
+import EditItemForm from './EditItemForm'; // Asumo que el componente existe
 
-// 📦 Definición de Tipos (Sin cambios)
+// 📦 Definición de Tipos
 // ---
 type ItemBatch = {
     id: string; 
@@ -10,159 +11,159 @@ type ItemBatch = {
     productCode: string;
     boxes: number;
     unitsPerBox: number;
-    totalUnits: number; // Asumo que este campo también existe en el DTO de C#
+    totalUnits: number; 
 };
+
+type SortableKeys = 'name' | 'productCode' | 'boxes' | 'unitsPerBox' | 'totalUnits'; 
+// ---
 
 function ItemList() {
     const [batches, setBatches] = useState<ItemBatch[]>([]);
-    type SortableKeys = keyof ItemBatch | 'TotalUnits'; 
-    const [sortBy, setSortBy] = useState<SortableKeys | null>(null); 
+    const [sortBy, setSortBy] = useState<SortableKeys | null>('name'); // Ordenar por nombre por defecto
     const [sortAsc, setSortAsc] = useState<boolean>(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(''); 
+    const [itemToEdit, setItemToEdit] = useState<ItemBatch | null>(null); // Estado para la edición
 
-    // 🔄 Lógica de Carga de Datos (Sin cambios)
-    useEffect(() => {
+    // 🔄 Lógica de Carga de Datos
+    const fetchBatches = () => {
         setLoading(true);
         setError('');
-
+        
+        // 🛑 CORRECCIÓN: Usar ruta RELATIVA. authFetch completará la URL base.
         authFetch("/itembatches", {
             method: "GET" 
         })
         .then(res => res.json()) 
         .then((data: ItemBatch[]) => {
             if (Array.isArray(data)) {
+                // Aquí el backend debería devolver la suma de lotes por item.
+                // Si devuelve lotes individuales, necesitaremos agruparlos aquí o asumir 
+                // que el backend ya hace la agrupación a nivel de productCode. 
+                // Asumiremos que 'itembatches' devuelve el inventario consolidado.
                 setBatches(data);
             } else {
                 setBatches([]);
-                setError("La API devolvió un formato incorrecto para el inventario.");
+                setError("La API devolvió un formato de datos inesperado.");
             }
         })
         .catch(err => {
-            console.error("Error al cargar inventario:", err);
-            setError("Error al cargar el inventario. Revise la conexión o la sesión.");
+            console.error("Error fetching item batches:", err);
+            setError(`Error al cargar el inventario: ${err.message}`);
             setBatches([]);
         })
         .finally(() => {
             setLoading(false);
         });
-
-    }, []);
-
-    // ⚙️ Handlers de Ordenamiento (Sin cambios funcionales)
-    const handleSort = (key: SortableKeys) => {
-        setSortAsc(sortBy === key ? !sortAsc : true);
-        setSortBy(key);
     };
 
-    // 📝 Lógica de Ordenamiento (Sin cambios funcionales)
+    useEffect(() => {
+        fetchBatches();
+    }, []); // Se ejecuta solo al montar
+
+    // Lógica de Ordenamiento
+    const handleSort = (key: SortableKeys) => {
+        if (sortBy === key) {
+            setSortAsc(!sortAsc);
+        } else {
+            setSortBy(key);
+            setSortAsc(true);
+        }
+    };
+
     const sortedBatches = [...batches].sort((a, b) => {
         if (!sortBy) return 0;
         
-        let valA: string | number;
-        let valB: string | number;
+        // Manejar el caso de 'totalUnits' si no viene directo del DTO
+        const aValue = sortBy === 'totalUnits' ? a.boxes * a.unitsPerBox : a[sortBy];
+        const bValue = sortBy === 'totalUnits' ? b.boxes * b.unitsPerBox : b[sortBy];
 
-        if (sortBy === 'TotalUnits') {
-            valA = (a.boxes ?? 0) * (a.unitsPerBox ?? 0);
-            valB = (b.boxes ?? 0) * (b.unitsPerBox ?? 0);
-        } else {
-            valA = (a[sortBy as keyof ItemBatch] ?? '').toString().toLowerCase();
-            valB = (b[sortBy as keyof ItemBatch] ?? '').toString().toLowerCase();
-        }
-
-        if (typeof valA === 'number' && typeof valB === 'number') {
-            return sortAsc ? valA - valB : valB - valA;
-        } else {
-            return sortAsc ? valA.toString().localeCompare(valB.toString()) : valB.toString().localeCompare(valA.toString());
-        }
+        if (aValue < bValue) return sortAsc ? -1 : 1;
+        if (aValue > bValue) return sortAsc ? 1 : -1;
+        return 0;
     });
 
-    // 🛑 Estados de Carga/Error/Vacío (Sin cambios)
-    if (loading) return <Spinner />;
-    if (error) return <p style={{ color: 'red', padding: '1rem' }}>❌ Error: {error}</p>;
-    if (batches.length === 0) return <p>El inventario está vacío. Use "Ingreso de Entradas" para comenzar.</p>;
+    // Estilo para los headers de la tabla
+    const thStyle: React.CSSProperties = {
+        padding: '10px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        textAlign: 'left',
+        cursor: 'pointer',
+        border: '1px solid #0056b3',
+    };
+    
+    const tdStyle: React.CSSProperties = {
+        padding: '10px',
+        borderBottom: '1px solid #eee',
+    };
 
-    // 📊 Renderizado de la Tabla - Estilo Minimalista
+    // Helper para el indicador de ordenamiento
+    const sortIndicator = (key: SortableKeys) => {
+        if (sortBy !== key) return null;
+        return sortAsc ? ' 🔼' : ' 🔽';
+    };
+
+    if (loading) {
+        return <div style={{ textAlign: 'center', padding: '50px' }}><Spinner /><p>Cargando inventario...</p></div>;
+    }
+
+    if (error) {
+        return <div style={{ color: 'red', textAlign: 'center', padding: '20px' }}>{error}</div>;
+    }
+    
+    // Si estamos editando, mostramos el formulario de edición
+    if (itemToEdit) {
+        return (
+            <EditItemForm 
+                item={itemToEdit} 
+                onCancel={() => setItemToEdit(null)} 
+                onItemUpdated={() => { 
+                    setItemToEdit(null); 
+                    fetchBatches(); // Recargar datos después de la actualización
+                }} 
+            />
+        );
+    }
+
+
     return (
-        <div style={{ padding: '0.5rem 0', overflowX: 'auto' }}>
-            {/* Título compacto */}
-            <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem' }}>
-                📦 Inventario por Lote
-            </h3>
+        <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px' }}>
+            <h2 style={{ color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Inventario Consolidado</h2>
             
-            {/* Estilo de tabla minimalista (Bootstrap-like) */}
-            <table style={{ 
-                width: '100%', 
-                borderCollapse: 'collapse', 
-                fontSize: '0.9rem',
-                border: '1px solid #dee2e6', // Borde general sutil
-                marginBottom: '1rem'
-            }}>
-                {/* Encabezado */}
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
                 <thead>
-                    <tr style={{ backgroundColor: '#f8f9fa' }}> {/* Fondo muy claro */}
-                        
-                        {/* Estilos para TH: padding reducido, sin bordes laterales */}
-                        {
-                            ['name', 'productCode', 'boxes', 'unitsPerBox', 'TotalUnits'].map((key) => {
-                                const isSortable = ['name', 'productCode', 'TotalUnits'].includes(key);
-                                const currentKey = key as SortableKeys;
-                                const headerText = key === 'name' ? 'Nombre' : 
-                                                   key === 'productCode' ? 'Código' : 
-                                                   key === 'boxes' ? 'Cajas' :
-                                                   key === 'unitsPerBox' ? 'U/Caja' : 'Total Unidades';
-
-                                const textAlign = ['boxes', 'unitsPerBox', 'TotalUnits'].includes(key) ? 'center' : 'left';
-                                
-                                const thStyle = {
-                                    padding: '0.5rem',
-                                    textAlign: textAlign as React.CSSProperties['textAlign'],
-                                    borderBottom: '2px solid #dee2e6', // Borde separador
-                                    border: 'none', // Quitamos bordes internos
-                                };
-                                
-                                if (isSortable) {
-                                    return (
-                                        <th key={key} style={thStyle}>
-                                            <button 
-                                                onClick={() => handleSort(currentKey)} 
-                                                style={{ 
-                                                    border: 'none', 
-                                                    background: 'none', 
-                                                    cursor: 'pointer',
-                                                    fontWeight: 'bold',
-                                                    color: '#343a40'
-                                                }}
-                                            >
-                                                {headerText} {sortBy === currentKey ? (sortAsc ? '▲' : '▼') : ''}
-                                            </button>
-                                        </th>
-                                    );
-                                } else {
-                                    return (
-                                        <th key={key} style={{ ...thStyle, fontWeight: 'bold', color: '#343a40' }}>
-                                            {headerText}
-                                        </th>
-                                    );
-                                }
-                            })
-                        }
+                    <tr>
+                        <th style={thStyle} onClick={() => handleSort('name')}>
+                            Nombre {sortIndicator('name')}
+                        </th>
+                        <th style={thStyle} onClick={() => handleSort('productCode')}>
+                            Código {sortIndicator('productCode')}
+                        </th>
+                        <th style={{ ...thStyle, textAlign: 'center' }} onClick={() => handleSort('boxes')}>
+                            Cajas {sortIndicator('boxes')}
+                        </th>
+                        <th style={{ ...thStyle, textAlign: 'center' }} onClick={() => handleSort('unitsPerBox')}>
+                            U/Caja {sortIndicator('unitsPerBox')}
+                        </th>
+                        <th style={{ ...thStyle, textAlign: 'center' }} onClick={() => handleSort('totalUnits')}>
+                            Total Unidades {sortIndicator('totalUnits')}
+                        </th>
+                        <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>Acciones</th>
                     </tr>
                 </thead>
-                {/* Cuerpo de la tabla */}
                 <tbody>
                     {sortedBatches.map((batch, index) => {
-                        const totalUnits = (batch.boxes ?? 0) * (batch.unitsPerBox ?? 0);
-                        const isLastRow = index === sortedBatches.length - 1;
-
-                        const tdStyle: React.CSSProperties = {
-                            padding: '0.5rem',
-                            border: 'none', // Quitamos bordes internos
-                            borderBottom: isLastRow ? 'none' : '1px solid #f2f2f2', // Borde sutil entre filas
+                        const isEven = index % 2 === 0;
+                        const rowStyle: React.CSSProperties = {
+                            backgroundColor: isEven ? '#f8f9fa' : 'white',
+                            cursor: 'pointer',
                         };
 
+                        const totalUnits = batch.boxes * batch.unitsPerBox;
+
                         return (
-                            <tr key={batch.id}>
+                            <tr key={batch.id} style={rowStyle} onDoubleClick={() => setItemToEdit(batch)}>
                                 {/* Nombre */}
                                 <td style={{ ...tdStyle, fontWeight: '600' }}>{batch.name}</td>
                                 
@@ -183,6 +184,24 @@ function ItemList() {
                                     backgroundColor: '#e9ecef' // Un fondo muy sutil para la columna de valor
                                 }}>
                                     {totalUnits}
+                                </td>
+                                
+                                {/* Botón de Acción */}
+                                <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                    <button
+                                        onClick={() => setItemToEdit(batch)}
+                                        style={{
+                                            padding: '5px 10px',
+                                            backgroundColor: '#ffc107',
+                                            color: '#333',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold'
+                                        }}
+                                    >
+                                        Editar
+                                    </button>
                                 </td>
                             </tr>
                         );

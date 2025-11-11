@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authFetch } from './utils/authFetch';
+import Spinner from './Spinner'; // Asumo que tienes un Spinner para el estado de carga
 
 type Props = {
     onItemUpdated: () => void;
@@ -16,11 +17,11 @@ type ItemBatch = {
 
 function ItemEgresoForm({ onItemUpdated }: Props) {
     
-    // 🛑 CORRECCIÓN 1: Declaración de Estados (Soluciona el ReferenceError)
     const [productCode, setProductCode] = useState('');
     const [unitsPerBox, setUnitsPerBox] = useState(0);
     const [boxesToRemove, setBoxesToRemove] = useState(0);
     const [errorMessage, setErrorMessage] = useState(''); // Se usa para feedback de error/éxito
+    const [isLoading, setIsLoading] = useState(false); // Estado de carga local
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,85 +38,79 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
             unitsPerBox: unitsPerBox 
         };
 
+        setIsLoading(true);
+
         try {
-            // authFetch ahora devuelve el objeto Response completo (Status 200 o 4xx/5xx)
-            const egresoRes = await authFetch("/egreso", {
+            // 🛑 CORRECCIÓN: Usar ruta RELATIVA. authFetch manejará la URL base.
+            const response = await authFetch('/egreso', {
                 method: "POST",
-                // ¡Importante! authFetch ya pone Content-Type: application/json en los headers,
-                // pero lo dejamos por si acaso, aunque ya no es necesario aquí
-                headers: { "Content-Type": "application/json" }, 
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(egresoData)
             });
-
-            // 🛑 NOTA: Con la versión corregida de authFetch, este if no es necesario
-            // ya que authFetch lanza un error para 4xx/5xx, mandándonos al catch.
-            // Pero lo dejamos por si la lógica de authFetch cambia.
-            if (!egresoRes.ok) {
-                // Si llegamos aquí, algo raro pasó; lanzamos un error para ir al catch
-                throw new Error(`Error ${egresoRes.status}: Error al procesar la salida.`);
+            
+            // Si llegamos aquí sin que authFetch lance un error, la respuesta es 2xx
+            if (response.ok) {
+                setErrorMessage(`✅ Egreso de ${boxesToRemove} cajas de ${productCode} registrado con éxito.`);
+                // Limpiar campos después de una operación exitosa
+                setProductCode('');
+                setUnitsPerBox(0);
+                setBoxesToRemove(0);
+                // Notificar al padre para que recargue ItemList/Historial
+                onItemUpdated(); 
+            } else {
+                 // Si response.ok es false (lo cual authFetch debería haber manejado, pero por si acaso)
+                 setErrorMessage("Error desconocido al registrar el egreso.");
             }
 
-            // ✅ CORRECCIÓN 2: Consumir la respuesta
-            // Esto es CRUCIAL. Evita el error "fantasma" que ocurría después del éxito.
-            // Si el backend no devuelve un cuerpo, usamos .text() para vaciar el stream.
-            await egresoRes.text(); 
-            
-            // 3. Limpiar formulario y dar feedback
-            setProductCode('');
-            setUnitsPerBox(0);
-            setBoxesToRemove(0);
-            setErrorMessage("✅ Salida registrada exitosamente."); 
-
-            // 4. Notificar a Home.tsx para recargar las vistas
-            onItemUpdated(); 
-            
-        } catch (err: any) {
-            // Este bloque atrapa: 
-            // a) Errores lanzados por authFetch (con mensajes limpios como "Stock insuficiente").
-            // b) Fallos de red.
-            const message = err.message || "Error desconocido. Por favor, revise la consola.";
-            console.error("Fallo en la operación de egreso:", err);
-            setErrorMessage(`🚨 ${message}`);
+        } catch (error: any) {
+            // Manejo de errores de red o errores lanzados por authFetch (ej: 400 Bad Request)
+            setErrorMessage(`Error al registrar egreso: ${error.message || 'Verifique el código de producto y el stock disponible.'}`);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            style={{
-                marginBottom: '2rem',
-                padding: '1.5rem',
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                border: '1px solid #e0e0e0'
-            }}
-        >
-            <h3 style={{ marginBottom: '1rem' }}>Registro de Salidas</h3>
+        <form onSubmit={handleSubmit} style={{ 
+            padding: '20px', 
+            border: '1px solid #ddd', 
+            borderRadius: '8px', 
+            maxWidth: '600px', 
+            margin: '20px auto',
+            backgroundColor: '#f8d7da', // Fondo sutil para egreso (rojo claro)
+            boxShadow: '0 4px 8px rgba(0,0,0,0.05)'
+        }}>
+            <h2 style={{ color: '#dc3545', borderBottom: '2px solid #dc3545', paddingBottom: '10px', marginBottom: '20px' }}>
+                <span role="img" aria-label="icono-salida" style={{marginRight: '10px'}}>⬇️</span>
+                Registrar Egreso (Salida) de Stock
+            </h2>
+            
+            {isLoading && <div style={{ marginBottom: '1rem', color: '#dc3545', fontWeight: 'bold' }}><Spinner /> Registrando salida...</div>}
+
 
             <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Código del Producto:
+                    Código de Producto:
                 </label>
                 <input
                     type="text"
-                    placeholder="Código del producto"
+                    placeholder="Ej: ART-001"
                     value={productCode}
                     onChange={e => setProductCode(e.target.value)}
                     required
-                    style={{ width: '95%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                    style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
-
+            
             <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Unidades por caja:
+                    Unidades por caja (Requerido para el egreso):
                 </label>
                 <input
                     type="number"
                     placeholder="Unidades por caja"
                     value={unitsPerBox}
-                    onChange={e => setUnitsPerBox(Number(e.target.value))}
+                    onChange={e => setUnitsPerBox(Number(e.target.value))}\
                     required
                     style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
@@ -129,7 +124,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
                     type="number"
                     placeholder="Cantidad de cajas"
                     value={boxesToRemove}
-                    onChange={e => setBoxesToRemove(Number(e.target.value))}
+                    onChange={e => setBoxesToRemove(Number(e.target.value))}\
                     required
                     style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
@@ -137,20 +132,21 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
 
             <button
                 type="submit"
+                disabled={isLoading}
                 style={{
                     padding: '0.6rem 1.2rem',
                     backgroundColor: '#dc3545',
                     color: '#fff',
                     border: 'none',
                     borderRadius: '4px',
-                    cursor: 'pointer'
+                    cursor: isLoading ? 'not-allowed' : 'pointer'
                 }}
             >
-                Registrar Salida del Inventario
+                {isLoading ? 'Procesando...' : 'Registrar Salida del Inventario'}
             </button>
 
             {errorMessage && (
-                <p style={{ color: errorMessage.startsWith('✅') ? 'green' : 'red', marginTop: '1rem' }}>
+                <p style={{ color: errorMessage.startsWith('✅') ? 'green' : 'red', marginTop: '1rem', fontWeight: 'bold' }}>
                     {errorMessage}
                 </p>
             )}

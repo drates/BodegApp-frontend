@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import Spinner from './Spinner';
 import { authFetch } from './utils/authFetch';
 
-// 📦 Definición de Tipos (Sin cambios)
-// ---
+// 📦 Definición de Tipos 
 type Movimiento = {
     timestamp: string;
     action: string;
@@ -26,11 +25,12 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
     const [filtro, setFiltro] = useState<string | null>(productCode || null); 
     const [error, setError] = useState('');
 
-    // 🔄 Lógica de Carga de Datos (Sin cambios)
+    // 🔄 Lógica de Carga de Datos
     useEffect(() => {
         setLoading(true);
         setError('');
 
+        // 🛑 CORRECCIÓN: Usar rutas RELATIVAS. authFetch completará la URL base.
         const endpoint = filtro
             ? `/stockmovements?productCode=${filtro}`
             : `/stockmovements`;
@@ -38,99 +38,130 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
         authFetch(endpoint, { method: "GET" })
             .then(res => res.json()) 
             .then((data: Movimiento[]) => {
-                setMovimientos(data);
-                setLoading(false);
+                if (Array.isArray(data)) {
+                    setMovimientos(data);
+                } else {
+                    setMovimientos([]);
+                    setError("La API devolvió un formato de datos inesperado.");
+                }
             })
             .catch(err => {
-                console.error("Error al cargar historial:", err);
-                setError("No se pudo cargar el historial de movimientos. Revise la sesión.");
+                console.error("Error fetching movimientos:", err);
+                setError(`Error al cargar el historial: ${err.message}`);
+                setMovimientos([]);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     }, [filtro]);
 
-    // ⚙️ Handlers (Sin cambios)
-    const handleProductFilterClick = (code: string) => {
-        setFiltro(filtro === code ? null : code);
+    // Lógica de Formato
+    const formatDelta = (delta: number, action: string) => {
+        // En lugar de usar delta > 0, usamos la acción para mayor claridad
+        if (action === 'Ingreso') {
+            return `+${delta}`;
+        }
+        if (action === 'Egreso') {
+            // Asumiendo que el delta es un valor absoluto positivo en el backend
+            return `-${Math.abs(delta)}`; 
+        }
+        return delta.toString();
     };
 
-    // 🛑 Estados de Carga/Error/Vacío (Sin cambios)
-    if (loading) return <Spinner />;
-    if (error) return <p style={{ color: 'red', padding: '1rem' }}>{error}</p>;
-    if (movimientos.length === 0) return <p style={{ padding: '1rem' }}>No hay movimientos registrados.</p>;
+    if (loading) {
+        return <div style={{ textAlign: 'center', padding: '50px' }}><Spinner /><p>Cargando historial de movimientos...</p></div>;
+    }
 
-    // 📊 Renderizado de la Tabla
+    if (error) {
+        return <div style={{ color: 'red', textAlign: 'center', padding: '20px' }}>{error}</div>;
+    }
+
+    if (movimientos.length === 0) {
+        return <div style={{ textAlign: 'center', padding: '20px', color: '#6c757d' }}>No se encontraron movimientos para {filtro ? `el código ${filtro}` : 'mostrar'}.</div>;
+    }
+
+    // Estilos para la tabla
+    const tableStyle: React.CSSProperties = {
+        width: '100%',
+        borderCollapse: 'collapse',
+        marginTop: '20px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    };
+
+    const thStyle: React.CSSProperties = {
+        padding: '10px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        textAlign: 'left',
+        border: '1px solid #0056b3',
+    };
+
     return (
-        // 1. Contenedor más minimalista: quitamos fondo y sombra, y reducimos padding
-        <div style={{
-            marginBottom: '1.5rem',
-            padding: '0.5rem 0', // Reducimos el padding vertical del div contenedor
-            overflowX: 'auto'
-        }}>
-            {/* 2. Título más compacto */}
-            <h3 style={{ 
-                marginBottom: '0.75rem', 
-                fontSize: '1.25rem' 
-            }}>
-              🔄️ Historial de Movimientos {filtro ? `— **${filtro}**` : ''}
-            </h3>
+        <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px' }}>
+            <h2 style={{ color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Historial de Movimientos de Stock</h2>
             
-            {/* 3. Estilo de tabla Bootstrap-like */}
-            <table style={{ 
-                minWidth: '700px', // Reducimos el minWidth
-                width: '100%', 
-                borderCollapse: 'collapse', 
-                fontSize: '0.85rem', // Fuente un poco más pequeña
-                border: '1px solid #dee2e6' // Borde sutil a la tabla completa
-            }}>
-                {/* Encabezado */}
+            {/* Input de Filtro */}
+            <div style={{ marginBottom: '15px' }}>
+                <label htmlFor="productFilter" style={{ marginRight: '10px', fontWeight: 'bold' }}>Filtrar por Código:</label>
+                <input
+                    id="productFilter"
+                    type="text"
+                    value={filtro || ''}
+                    onChange={(e) => setFiltro(e.target.value)}
+                    placeholder="Escriba código de producto (ej: ART-001)"
+                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '300px' }}
+                />
+            </div>
+            
+            <table style={tableStyle}>
                 <thead>
-                    <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                        {/* Reducimos el padding en los th a 0.5rem */}
-                        <th style={{ padding: '0.5rem', textAlign: 'left' }}>Fecha</th>
-                        <th style={{ padding: '0.5rem', textAlign: 'left' }}>Acción</th>
-                        <th style={{ padding: '0.5rem', textAlign: 'left' }}>Código</th>
-                        <th style={{ padding: '0.5rem', textAlign: 'left' }}>Nombre</th>
-                        <th style={{ padding: '0.5rem', textAlign: 'center' }}>U/Caja</th>
-                        <th style={{ padding: '0.5rem', textAlign: 'right' }}>Cajas</th> {/* Etiqueta más corta */}
-                        <th style={{ padding: '0.5rem', textAlign: 'right' }}>Stock Final</th> {/* Etiqueta más corta */}
+                    <tr>
+                        <th style={{ ...thStyle, width: '15%' }}>Fecha/Hora</th>
+                        <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>Acción</th>
+                        <th style={{ ...thStyle, width: '15%' }}>Código</th>
+                        <th style={{ ...thStyle, width: '25%' }}>Nombre Producto</th>
+                        <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>U/Caja</th>
+                        <th style={{ ...thStyle, width: '10%', textAlign: 'right' }}>Cajas +/-</th>
+                        <th style={{ ...thStyle, width: '15%', textAlign: 'right' }}>Cajas Final</th>
                     </tr>
                 </thead>
-                {/* Cuerpo de la tabla */}
                 <tbody>
                     {movimientos.map((m, index) => {
-                        const actionText = m.action.toUpperCase();
-                        const deltaValue = m.delta > 0 ? `+${m.delta}` : m.delta; // Muestra el signo para entradas
+                        const isEven = index % 2 === 0;
+                        const rowStyle: React.CSSProperties = {
+                            backgroundColor: isEven ? '#f8f9fa' : 'white',
+                            borderBottom: '1px solid #eee'
+                        };
+
+                        const deltaValue = formatDelta(m.delta, m.action);
                         
-                        // Determinar color de la fila para minimalismo
-                        const rowColor = m.action.toLowerCase() === 'ingreso' ? 'rgba(40, 167, 69, 0.05)' : 
-                                         m.action.toLowerCase() === 'egreso' ? 'rgba(220, 53, 69, 0.05)' : 
-                                         'transparent';
-
-
                         return (
-                            <tr 
-                                key={index} 
-                                style={{ 
-                                    borderBottom: '1px solid #f2f2f2', // Borde sutil entre filas
-                                    backgroundColor: rowColor // Color sutil basado en la acción
-                                }}
-                            >
-                                {/* Reducimos el padding en los td a 0.5rem y usamos color sutil en la fecha */}
-                                <td style={{ padding: '0.5rem', color: '#6c757d' }}>{new Date(m.timestamp).toLocaleString()}</td>
-                                <td style={{ padding: '0.5rem', fontWeight: 'bold' }}>
-                                    {actionText}
+                            <tr key={`${m.timestamp}-${m.productCode}-${index}`} style={rowStyle}>
+                                <td style={{ padding: '0.5rem', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    {new Date(m.timestamp).toLocaleString('es-CL')}
+                                </td>
+                                <td style={{ padding: '0.5rem', textAlign: 'center', fontWeight: 'bold' }}>
+                                    <span style={{ 
+                                        color: m.action === 'Ingreso' ? '#28a745' : '#dc3545', // Verde para ingreso, rojo para egreso
+                                        padding: '4px 8px',
+                                        borderRadius: '4px',
+                                        backgroundColor: m.action === 'Ingreso' ? '#d4edda' : '#f8d7da',
+                                        fontSize: '0.8rem'
+                                    }}>
+                                        {m.action}
+                                    </span>
                                 </td>
                                 <td style={{ padding: '0.5rem' }}>
-                                    <button
-                                        onClick={() => handleProductFilterClick(m.productCode)}
+                                    {/* Botón/enlace para filtrar por este código específico */}
+                                    <button 
+                                        onClick={() => setFiltro(m.productCode)}
                                         style={{
-                                            background: filtro === m.productCode ? '#e9ecef' : 'transparent', // Fondo más suave para el filtro
+                                            backgroundColor: 'transparent',
                                             border: 'none',
+                                            textDecoration: 'underline',
                                             color: '#007bff',
-                                            textDecoration: 'none', // Quitamos el subrayado
                                             cursor: 'pointer',
-                                            padding: '0.1rem 0.3rem', // Padding mínimo
-                                            borderRadius: '3px',
+                                            padding: 0,
                                             fontWeight: '600'
                                         }}
                                     >
@@ -146,7 +177,7 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
                                     padding: '0.5rem', 
                                     textAlign: 'right', 
                                     fontWeight: 'bold',
-                                    color: m.delta > 0 ? '#28a745' : '#dc3545' // Verde para ingreso, rojo para egreso
+                                    color: m.action === 'Ingreso' ? '#28a745' : '#dc3545' // Verde para ingreso, rojo para egreso
                                 }}>
                                     {deltaValue}
                                 </td>

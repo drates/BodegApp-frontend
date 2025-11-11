@@ -1,19 +1,24 @@
 // utils/authFetch.ts
 
-// ====================================================================
-// 💡 CORRECCIÓN CRÍTICA: Centralizar la URL de la API
-// ====================================================================
-// Lee VITE_API_URL configurada en Azure SWA o usa el fallback de localhost para desarrollo.
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; 
-// ====================================================================
+import { API_BASE_URL } from '../config'; // Importamos la URL base
 
-
-export async function authFetch(endpoint: string, options: RequestInit = {}) {
+/**
+ * Función helper para realizar llamadas a la API con el token de autenticación.
+ * * @param url La URL o path del endpoint (ej: '/items' o 'http://dominio/items').
+ * @param options Opciones estándar de la llamada fetch.
+ * @returns El objeto Response de la llamada.
+ */
+export async function authFetch(url: string, options: RequestInit = {}) {
     const token = localStorage.getItem("token");
 
-    // Construir la URL completa: API_BASE_URL + endpoint relativo
-    const finalUrl = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
-    
+    // 🌟 NUEVA LÓGICA: Construir la URL absoluta
+    let fullUrl = url;
+    // Chequeamos si la URL ya es absoluta (contiene ://)
+    if (!url.includes('://')) {
+        // Si es relativa, la combinamos con la base
+        fullUrl = `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    }
+
     const headers = {
         // Aseguramos que si no se provee Content-Type, sea JSON por defecto
         "Content-Type": "application/json", 
@@ -22,7 +27,7 @@ export async function authFetch(endpoint: string, options: RequestInit = {}) {
     };
 
     // 1. Ejecutar el fetch con el token
-    const res = await fetch(finalUrl, { ...options, headers }); // 💡 Uso de finalUrl
+    const res = await fetch(fullUrl, { ...options, headers }); // Usamos fullUrl
 
     // 2. Manejo de errores (Status 4xx o 5xx)
     if (!res.ok) {
@@ -45,6 +50,7 @@ export async function authFetch(endpoint: string, options: RequestInit = {}) {
         throw new Error(errorMessage);
     }
 
-    // 3. Devolvemos el objeto Response (para que el componente decida si usar .json() o no)
+    // 3. 🌟 CORRECCIÓN CRÍTICA: No intentar leer JSON si el cuerpo está vacío (ej. PUT/DELETE 204 No Content)
+    // Devolvemos el objeto Response directamente. El llamador decide si llama a .json()
     return res;
 }
