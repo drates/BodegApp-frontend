@@ -2,20 +2,21 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 // ====================================================================
 // 💡 CORRECCIÓN CRÍTICA: Centralizar la URL de la API (para login/register)
+// Esto permite que la app funcione tanto en localhost como en Azure SWA.
 // ====================================================================
 // Lee VITE_API_URL configurada en Azure SWA o usa el fallback de localhost:5000.
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; 
 const LOGIN_ENDPOINT = `${API_BASE_URL}/auth/login`; 
 
-// El endpoint de registro también debe usar la base
-// Nota: Si el registro se maneja aquí, ajusta. Si se maneja en AuthPanel.tsx (como tu código original), no es necesario.
-// Si se maneja en el mismo componente de Login/Register:
+// El endpoint de registro también debe usar la base.
+// Lo definimos aquí si AuthPanel usa la lógica de fetch, o lo definimos allí.
+// Asumiremos que AuthPanel.tsx lo define, pero es bueno tener una referencia.
 // const REGISTER_ENDPOINT = `${API_BASE_URL}/auth/register`; 
 // ====================================================================
 
 
 // ====================================================================
-// UTILIDADES (El resto de la lógica de decodificación de token no cambia)
+// UTILIDADES
 // ====================================================================
 
 /**
@@ -42,9 +43,20 @@ const decodeToken = (token: string): string | null => {
 
 
 // ====================================================================
-// CONTEXTO DE AUTENTICACIÓN (Types, Context, Hook - No se muestran por brevedad)
+// CONTEXTO DE AUTENTICACIÓN (Types)
 // ====================================================================
-// ... (Toda la definición de types y el contexto)
+type AuthContextType = {
+    token: string | null;
+    userRole: string;
+    isLoggedIn: boolean;
+    isSuperAdmin: boolean;
+    loading: boolean;
+    login: (email: string, password: string) => Promise<void>;
+    logout: () => void;
+};
+
+// 1. Creación del contexto
+const AuthContext = createContext<AuthContextType | undefined>(undefined); 
 
 // ====================================================================
 // PROVIDER
@@ -54,8 +66,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [userRole, setUserRole] = useState<string>('Guest');
     const [loading, setLoading] = useState(true);
 
-    // ... (useEffect para validar el token - no se muestra por brevedad)
+    // Lógica para validar token al iniciar la app o cuando el token cambia
+    useEffect(() => {
+        const savedToken = localStorage.getItem("token");
+        if (savedToken) {
+            const role = decodeToken(savedToken);
+            if (role) {
+                setToken(savedToken);
+                setUserRole(role);
+            } else {
+                localStorage.removeItem("token");
+                setToken(null);
+            }
+        }
+        setLoading(false);
+    }, []);
 
+    // Valores derivados
     const isLoggedIn = !!token;
     const isSuperAdmin = userRole === 'Superadmin';
 
@@ -64,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
 
         try {
-            // 💡 Uso de la constante que lee la variable de entorno
+            // Uso de la constante que lee la variable de entorno
             const response = await fetch(LOGIN_ENDPOINT, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -88,6 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Éxito: Actualizar el estado
             setToken(newToken);
             setUserRole(role);
+            localStorage.setItem('token', newToken); // Guardar el token aquí
             
         } catch (error: any) {
             throw error; 
@@ -101,12 +129,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true); 
         setToken(null);
         setUserRole('Guest');
-        localStorage.removeItem('token'); // Asegurarse de removerlo aquí
+        localStorage.removeItem('token'); 
         setLoading(false);
     };
 
-    // ... (Valor del contexto y Provider - no se muestran por brevedad)
+    // --- CONTEXT VALUE ---
+    const value: AuthContextType = {
+        token,
+        userRole,
+        isLoggedIn,
+        isSuperAdmin,
+        loading,
+        login,
+        logout,
+    };
 
-    // return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-    // ...
+    // 🛑 ARREGLO CRÍTICO: El Provider debe devolver el JSX
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+// 2. Hook para usar el contexto (¡CRÍTICO: Debe ser exportado!)
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };
