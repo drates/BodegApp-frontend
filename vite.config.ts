@@ -1,12 +1,30 @@
 // vite.config.ts
 
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+// Importación correcta para tu proyecto
+import react from '@vitejs/plugin-react-swc' 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // INICIO: CONFIGURACIÓN DEL PROXY
+  
+  // ==========================================================
+  // 🎯 CONFIGURACIÓN CRÍTICA PARA AZURE STATIC WEB APPS (SWA)
+  // ==========================================================
+  // Fuerza a Vite a generar rutas de activos (assets) relativas a la raíz.
+  // Esto es crucial para que Azure SWA encuentre el archivo main.js.
+  base: '/', 
+  
+  build: {
+    // Recomendado: Baja el target para máxima compatibilidad con el módulo script.
+    target: 'es2015', 
+    outDir: 'dist', // Directorio de salida por defecto
+  },
+  // ==========================================================
+  
+  // ==========================================================
+  // ⚙️ CONFIGURACIÓN DE PROXY PARA DESARROLLO LOCAL (MANTENIDA)
+  // ==========================================================
   server: {
     proxy: {
       // Si el frontend llama a una ruta que empieza por '/api'
@@ -15,12 +33,10 @@ export default defineConfig({
         target: 'http://localhost:5000/items', 
         // Es necesario para que el Backend sepa que la petición viene de un host diferente
         changeOrigin: true, 
-        // Opcional: Reemplaza '/api' con '' en la URL final (dependerá de la configuración de tu C#)
-        // rewrite: (path) => path.replace(/^\/api/, ''), 
-        // Desactiva la verificación SSL (necesario si estás usando HTTP)
+        // Desactiva la verificación SSL
         secure: false,
       },
     },
   },
-  // FIN: CONFIGURACIÓN DEL PROXY
+  // ==========================================================
 })
