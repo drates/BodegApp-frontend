@@ -9,14 +9,9 @@
     "rewrite": "/index.html",
     "exclude": ["/assets/*.{svg,png,jpg,css,js}", "/*.{svg,png,jpg,css,js}"]
   },
-  "globalHeaders": {
-    "Content-Security-Policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'",
-    "Access-Control-Allow-Origin": "*"
-  },
-  "mimeTypes": {
-    ".js": "text/javascript",
-    ".mjs": "text/javascript",
-    ".jsx": "text/javascript",
-    ".tsx": "text/javascript"
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html"
+    }
   }
 }
