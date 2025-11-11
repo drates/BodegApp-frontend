@@ -4,8 +4,8 @@ import React, { createContext, useContext, useState, useEffect, type ReactNode }
 // 💡 CORRECCIÓN CRÍTICA: Centralizar la URL de la API (para login/register)
 // Esto resuelve el error TS2307 (Cannot find module './config')
 // ====================================================================
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; 
-const LOGIN_ENDPOINT = `${API_BASE_URL}/api/auth/login`; 
+import { API_BASE_URL } from './utils/config';
+const LOGIN_ENDPOINT = `${API_BASE_URL}/api/auth/login`;
 
 // ====================================================================
 // UTILIDADES
