@@ -6,6 +6,9 @@
  * @param options Opciones estándar de fetch.
  * @returns Promesa que resuelve en el objeto Response de fetch.
  */
+
+import { API_BASE_URL } from './config';
+
 export const authFetch = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
     
     // ✅ Se elimina la importación de 'useAuth' (TS6133) y la dependencia de 'config' (TS2307).
@@ -13,7 +16,7 @@ export const authFetch = async (endpoint: string, options: RequestInit = {}): Pr
     const token = localStorage.getItem('token');
     
     // Aseguramos que la URL sea el endpoint relativo para el proxy de SWA
-    const url = endpoint.startsWith('http') ? endpoint : endpoint; 
+const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
 
     const defaultHeaders = {
         'Content-Type': 'application/json',
