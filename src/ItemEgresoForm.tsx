@@ -1,27 +1,19 @@
 import { useState } from 'react';
 import { authFetch } from './utils/authFetch';
-import Spinner from './Spinner'; // Asumo que tienes un Spinner para el estado de carga
 
 type Props = {
     onItemUpdated: () => void;
 };
 
-// Se mantiene el tipo para buena práctica
-type ItemBatch = { 
-    id: string;
-    productCode: string;
-    name: string;
-    boxes: number;
-    unitsPerBox: number;
-};
+// Se eliminó el tipo 'ItemBatch' ya que no se utiliza directamente en este componente (TS6196)
 
 function ItemEgresoForm({ onItemUpdated }: Props) {
     
+    // 🛑 CORRECCIÓN 1: Declaración de Estados (Soluciona el ReferenceError)
     const [productCode, setProductCode] = useState('');
     const [unitsPerBox, setUnitsPerBox] = useState(0);
     const [boxesToRemove, setBoxesToRemove] = useState(0);
     const [errorMessage, setErrorMessage] = useState(''); // Se usa para feedback de error/éxito
-    const [isLoading, setIsLoading] = useState(false); // Estado de carga local
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,81 +30,74 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
             unitsPerBox: unitsPerBox 
         };
 
-        setIsLoading(true);
-
         try {
-            // 🛑 CORRECCIÓN: Usar ruta RELATIVA. authFetch manejará la URL base.
             const response = await authFetch('/egreso', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(egresoData)
+                method: 'POST',
+                body: JSON.stringify(egresoData),
             });
-            
-            // Si llegamos aquí sin que authFetch lance un error, la respuesta es 2xx
-            if (response.ok) {
-                setErrorMessage(`✅ Egreso de ${boxesToRemove} cajas de ${productCode} registrado con éxito.`);
-                // Limpiar campos después de una operación exitosa
-                setProductCode('');
-                setUnitsPerBox(0);
-                setBoxesToRemove(0);
-                // Notificar al padre para que recargue ItemList/Historial
-                onItemUpdated(); 
-            } else {
-                 // Si response.ok es false (lo cual authFetch debería haber manejado, pero por si acaso)
-                 setErrorMessage("Error desconocido al registrar el egreso.");
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Si la API devuelve un error (ej. 400 Bad Request, 404 Not Found)
+                setErrorMessage(data.message || "Error al registrar la salida. Verifique el código y la cantidad.");
+                return;
             }
 
-        } catch (error: any) {
-            // Manejo de errores de red o errores lanzados por authFetch (ej: 400 Bad Request)
-            setErrorMessage(`Error al registrar egreso: ${error.message || 'Verifique el código de producto y el stock disponible.'}`);
-        } finally {
-            setIsLoading(false);
+            // Éxito
+            setErrorMessage(`✅ Salida de ${boxesToRemove} cajas registrada para el producto ${productCode}.`);
+            setProductCode('');
+            setUnitsPerBox(0);
+            setBoxesToRemove(0);
+            onItemUpdated(); // Notifica al componente padre para recargar la lista
+            
+        } catch (error) {
+            console.error("Fallo de red o del servidor:", error);
+            setErrorMessage("Error de conexión con el servidor. Intente de nuevo.");
         }
     };
 
+
     return (
         <form onSubmit={handleSubmit} style={{ 
-            padding: '20px', 
-            border: '1px solid #ddd', 
-            borderRadius: '8px', 
             maxWidth: '600px', 
-            margin: '20px auto',
-            backgroundColor: '#f8d7da', // Fondo sutil para egreso (rojo claro)
-            boxShadow: '0 4px 8px rgba(0,0,0,0.05)'
+            margin: '0 auto', 
+            padding: '2rem', 
+            backgroundColor: '#fff', 
+            borderRadius: '8px', 
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            borderLeft: '5px solid #dc3545'
         }}>
-            <h2 style={{ color: '#dc3545', borderBottom: '2px solid #dc3545', paddingBottom: '10px', marginBottom: '20px' }}>
-                <span role="img" aria-label="icono-salida" style={{marginRight: '10px'}}>⬇️</span>
-                Registrar Egreso (Salida) de Stock
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#dc3545' }}>
+                Registro de Salida (Egreso)
             </h2>
-            
-            {isLoading && <div style={{ marginBottom: '1rem', color: '#dc3545', fontWeight: 'bold' }}><Spinner /> Registrando salida...</div>}
-
+            <p style={{ marginBottom: '1rem', color: '#6c757d' }}>Retirar stock de un producto existente.</p>
 
             <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Código de Producto:
+                    Código del Producto:
                 </label>
                 <input
                     type="text"
-                    placeholder="Ej: ART-001"
+                    placeholder="Código (ej: A001)"
                     value={productCode}
                     onChange={e => setProductCode(e.target.value)}
                     required
-                    style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
             
             <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Unidades por caja (Requerido para el egreso):
+                    Unidades por Caja:
                 </label>
                 <input
                     type="number"
-                    placeholder="Unidades por caja"
+                    placeholder="Unidades"
                     value={unitsPerBox}
-                    onChange={e => setUnitsPerBox(Number(e.target.value))}\
+                    onChange={e => setUnitsPerBox(Number(e.target.value))}
                     required
-                    style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
 
@@ -124,29 +109,30 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
                     type="number"
                     placeholder="Cantidad de cajas"
                     value={boxesToRemove}
-                    onChange={e => setBoxesToRemove(Number(e.target.value))}\
+                    onChange={e => setBoxesToRemove(Number(e.target.value))}
                     required
-                    style={{ width: '30%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
 
             <button
                 type="submit"
-                disabled={isLoading}
                 style={{
                     padding: '0.6rem 1.2rem',
                     backgroundColor: '#dc3545',
                     color: '#fff',
                     border: 'none',
                     borderRadius: '4px',
-                    cursor: isLoading ? 'not-allowed' : 'pointer'
+                    cursor: 'pointer',
+                    width: '100%',
+                    fontWeight: 'bold'
                 }}
             >
-                {isLoading ? 'Procesando...' : 'Registrar Salida del Inventario'}
+                Registrar Salida del Inventario
             </button>
 
             {errorMessage && (
-                <p style={{ color: errorMessage.startsWith('✅') ? 'green' : 'red', marginTop: '1rem', fontWeight: 'bold' }}>
+                <p style={{ color: errorMessage.startsWith('✅') ? 'green' : 'red', marginTop: '1rem', textAlign: 'center' }}>
                     {errorMessage}
                 </p>
             )}

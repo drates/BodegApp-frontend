@@ -172,7 +172,7 @@ function ItemForm({ onItemCreated }: Props) {
                             type="number"
                             placeholder="Unidades por caja"
                             value={unitsPerBox}
-                            onChange={e => setUnitsPerBox(Number(e.target.value))}\
+                            onChange={e => setUnitsPerBox(Number(e.target.value))}
                             required
                             min="1"
                             style={inputElementStyle}

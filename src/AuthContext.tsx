@@ -1,106 +1,82 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { API_BASE_URL } from './config'; // 💡 Importamos la URL base centralizada
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-// ====================================================================\
+// ====================================================================
 // 💡 CORRECCIÓN CRÍTICA: Centralizar la URL de la API (para login/register)
-// ====================================================================\
+// Esto resuelve el error TS2307 (Cannot find module './config')
+// ====================================================================
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; 
 const LOGIN_ENDPOINT = `${API_BASE_URL}/auth/login`; 
-const REGISTER_ENDPOINT = `${API_BASE_URL}/auth/register`; // Usado en AuthPanel.tsx, pero bueno definirlo aquí o en un config si queremos coherencia.
-// ====================================================================\
 
-
-// ====================================================================\
+// ====================================================================
 // UTILIDADES
-// ====================================================================\
+// ====================================================================
 
 /**
  * Decodifica un JWT para extraer el payload y buscar la claim de rol.
- * Busca las claims de rol comunes en tokens de .NET/C# o custom claims.
  */
 const decodeToken = (token: string): string | null => {
     try {
         const payloadBase64 = token.split('.')[1];
         // Reemplazo para tokens Base64 URL Safe
         const payloadDecoded = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
-        const decoded = JSON.parse(payloadDecoded);
-        
-        // La clave de rol puede variar. Buscamos las más probables.
-        const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 
-                     decoded.role || 
-                     decoded.Role;
-        
-        // Devolvemos el rol como string o null si no se encuentra
-        return typeof role === 'string' ? role : null;
+        const payload = JSON.parse(payloadDecoded);
+        // El rol se almacena en la claim 'role' o 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+        return payload.role || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
     } catch (e) {
-        console.error("Fallo al decodificar token o extraer el rol:", e);
         return null;
     }
 };
 
+type UserRole = 'Admin' | 'User' | 'SuperAdmin' | 'Guest';
 
-// ====================================================================\
-// CONTEXTO DE AUTENTICACIÓN
-// ====================================================================\
-
-// 📦 Definición de Tipos
-type AuthContextType = {
+interface AuthContextType {
     token: string | null;
-    userRole: string;
-    isLoggedIn: boolean;
-    isSuperAdmin: boolean;
-    loading: boolean; // Estado de carga inicial (verificación de token)
+    userRole: UserRole;
+    loading: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
-};
+    // ✅ PROPIEDADES AÑADIDAS para resolver los errores TS2339 en App.tsx y SuperAdminPanel.tsx
+    isLoggedIn: boolean; 
+    isSuperAdmin: boolean;
+    isAdmin: boolean; 
+}
 
-// Valor por defecto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Hook para usar el contexto
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+interface AuthProviderProps {
+    children: ReactNode; 
+}
 
-// 🧑‍💻 Componente Provider
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-    const [userRole, setUserRole] = useState('Guest');
-    const [loading, setLoading] = useState(true); // Inicialmente TRUE
+    const [userRole, setUserRole] = useState<UserRole>('Guest');
+    const [loading, setLoading] = useState(true); 
 
-    // Estados derivados
+    // Propiedades calculadas (necesarias para App.tsx y SuperAdminPanel.tsx)
     const isLoggedIn = !!token;
     const isSuperAdmin = userRole === 'SuperAdmin';
-    
-    // 🔄 Efecto para la carga inicial / chequeo de token en localStorage
+    const isAdmin = userRole === 'Admin' || userRole === 'SuperAdmin'; 
+
     useEffect(() => {
-        // Si hay un token, intentar decodificarlo para establecer el rol
         if (token) {
             const role = decodeToken(token);
             if (role) {
-                setUserRole(role);
+                setUserRole(role as UserRole);
+                localStorage.setItem('token', token); 
             } else {
-                // Token inválido o sin rol, forzar logout
-                localStorage.removeItem('token');
                 setToken(null);
+                localStorage.removeItem('token');
                 setUserRole('Guest');
             }
         }
-        // Marcar la carga como completada después del chequeo
-        setLoading(false); 
-        // El effect solo se ejecuta al montar o si el token cambia (setToken)
-    }, [token]); 
+        setLoading(false);
+    }, [token]);
 
 
-    // 🔒 Función de Login
     const login = async (email: string, password: string) => {
         setLoading(true);
 
         try {
-            // 💡 Uso de la constante que lee la variable de entorno
             const response = await fetch(LOGIN_ENDPOINT, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -115,29 +91,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const data = await response.json();
             const newToken = data.token;
             
-            // 🚨 Guardar el nuevo token en localStorage inmediatamente
-            localStorage.setItem('token', newToken);
-
             const role = decodeToken(newToken);
             
             if (!role) {
-                // Si no hay rol, consideramos el login fallido.
-                localStorage.removeItem('token'); // Limpiar token
                 throw new Error("El token de sesión no contiene un rol válido.");
             }
 
-            // Éxito: Actualizar el estado
-            setToken(newToken); // Esto dispara el useEffect para revalidar
-            setUserRole(role);
+            setToken(newToken);
+            setUserRole(role as UserRole);
             
         } catch (error: any) {
-            // Importante: Volver a lanzar el error para que el componente Login/AuthPanel lo maneje
             throw error; 
         } finally {
-            // El setLoading(false) se maneja implícitamente por el setToken en el effect,
-            // pero lo ponemos aquí para asegurar que el estado de carga se actualice
-            // después de un error de login.
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
@@ -146,22 +112,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setLoading(true); 
         setToken(null);
         setUserRole('Guest');
-        localStorage.removeItem('token'); // Asegurarse de removerlo aquí
-        // Forzar la navegación a la raíz para que AppRouter muestre Login
-        window.location.href = '/'; 
+        localStorage.removeItem('token'); 
         setLoading(false);
     };
 
-    // --- CONTEXT VALUE ---
-    const value: AuthContextType = {
+    const value = {
         token,
         userRole,
-        isLoggedIn,
-        isSuperAdmin,
         loading,
         login,
         logout,
+        // ✅ Exportamos las propiedades calculadas
+        isLoggedIn, 
+        isSuperAdmin,
+        isAdmin
     };
 
+    if (loading) {
+        return <div>Cargando sesión...</div>; 
+    }
+
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth debe usarse dentro de un AuthProvider');
+    }
+    return context;
 };

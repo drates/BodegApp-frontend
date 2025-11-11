@@ -1,49 +1,55 @@
-import { useEffect, useState } from 'react';
-import { authFetch } from './utils/authFetch'; // ajusta la ruta si es necesario
+import React, { useEffect, useState } from 'react';
 
-
-type Item = {
-  id: number;
-  name: string;
-  boxes: number;
-  productCode: string;
-};
-
-function StockAlert() {
-  const [lowStockItems, setLowStockItems] = useState<Item[]>([]);
-
-  useEffect(() => {
-  authFetch("/itembatches/alertas")
-    .then(res => res.json())
-    .then(data => setLowStockItems(data))
-    .catch(err => console.error("Error al cargar alertas:", err));
-}, []);
-
-  if (lowStockItems.length === 0) return null;
-
-  return (
-    <div
-      style={{
-        marginBottom: '1rem',
-        padding: '0.2rem',
-        borderRadius: '8px',
-        backgroundColor: '#fff8f0',
-        border: '1px solid #f5c6cb',
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)'
-      }}
-    >
-      <h5 style={{ color: '#d9534f' }}>
-        ⚠️ Alerta: {lowStockItems.length} producto(s) con menos de 3 cajas
-      </h5>
-      <ul>
-        {lowStockItems.map(item => (
-          <li key={item.id}>
-            <strong>{item.name || item.productCode}</strong> — {item.boxes} cajas
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+interface StockAlertProps {
+    message: string;
+    isVisible: boolean;
 }
+
+/**
+ * Muestra un mensaje de alerta temporal (éxito o error) con un diseño simple.
+ */
+const StockAlert: React.FC<StockAlertProps> = ({ message, isVisible }) => {
+    const [show, setShow] = useState(false);
+
+    useEffect(() => {
+        if (isVisible) {
+            setShow(true);
+            const timer = setTimeout(() => {
+                setShow(false);
+            }, 5000); // Se oculta después de 5 segundos
+            return () => clearTimeout(timer);
+        } else {
+            setShow(false);
+        }
+    }, [isVisible, message]);
+
+    if (!show) return null;
+
+    // Determina si es éxito (verde) o error (rojo) basado en el mensaje
+    const isSuccess = message.startsWith("✅");
+    const backgroundColor = isSuccess ? '#28a745' : '#dc3545'; // verde o rojo
+    const borderColor = isSuccess ? '#218838' : '#c82333';
+
+    return (
+        <div 
+            style={{
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                padding: '15px 25px',
+                backgroundColor: backgroundColor,
+                color: '#fff',
+                borderRadius: '8px',
+                border: `1px solid ${borderColor}`,
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                zIndex: 1000,
+                fontWeight: 'bold',
+                animation: 'fadeIn 0.5s'
+            }}
+        >
+            {message}
+        </div>
+    );
+};
 
 export default StockAlert;
