@@ -30,7 +30,7 @@ export default defineConfig({
       // Si el frontend llama a una ruta que empieza por '/api'
       '/api': {
         // Redirige la petición a la URL de tu Backend
-        target: 'http://localhost:5000/items', 
+        target: 'http://localhost:5000/', 
         // Es necesario para que el Backend sepa que la petición viene de un host diferente
         changeOrigin: true, 
         // Desactiva la verificación SSL
