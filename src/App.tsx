@@ -1,4 +1,4 @@
-import React from 'react';
+
 // Asume que todos estos componentes están definidos en archivos separados o dentro de este archivo (si es una sola file app)
 import { AuthProvider, useAuth } from './AuthContext'; 
 import Login from './Login';

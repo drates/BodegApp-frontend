@@ -1,4 +1,3 @@
-import React from 'react';
 import AuthPanel from './AuthPanel';
 
 function Login() {
