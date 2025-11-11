@@ -33,7 +33,7 @@ function ItemForm({ onItemCreated }: Props) {
             console.log("Enviando a /ingreso:", newItem);
 
             // 1. Ejecutar el POST de Ingreso
-            await authFetch("http://localhost:5000/ingreso", {
+            await authFetch("/ingreso", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newItem)

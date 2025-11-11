@@ -13,7 +13,7 @@ function StockAlert() {
   const [lowStockItems, setLowStockItems] = useState<Item[]>([]);
 
   useEffect(() => {
-  authFetch("http://localhost:5000/itembatches/alertas")
+  authFetch("/itembatches/alertas")
     .then(res => res.json())
     .then(data => setLowStockItems(data))
     .catch(err => console.error("Error al cargar alertas:", err));

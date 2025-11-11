@@ -27,7 +27,7 @@ function Home() {
     const fetchUserInfo = useCallback(async () => {
     try {
         // PASO 1: Obtener el objeto Response completo
-        const response = await authFetch('http://localhost:5000/auth/me', {
+        const response = await authFetch('/auth/me', {
             method: 'GET'
         });
 

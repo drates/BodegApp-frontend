@@ -26,7 +26,7 @@ function ItemList() {
         setLoading(true);
         setError('');
 
-        authFetch("http://localhost:5000/itembatches", {
+        authFetch("/itembatches", {
             method: "GET" 
         })
         .then(res => res.json()) 

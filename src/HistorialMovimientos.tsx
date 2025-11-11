@@ -32,8 +32,8 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
         setError('');
 
         const endpoint = filtro
-            ? `http://localhost:5000/stockmovements?productCode=${filtro}`
-            : `http://localhost:5000/stockmovements`;
+            ? `/stockmovements?productCode=${filtro}`
+            : `/stockmovements`;
 
         authFetch(endpoint, { method: "GET" })
             .then(res => res.json()) 

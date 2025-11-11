@@ -39,7 +39,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
 
         try {
             // authFetch ahora devuelve el objeto Response completo (Status 200 o 4xx/5xx)
-            const egresoRes = await authFetch("http://localhost:5000/egreso", {
+            const egresoRes = await authFetch("/egreso", {
                 method: "POST",
                 // ¡Importante! authFetch ya pone Content-Type: application/json en los headers,
                 // pero lo dejamos por si acaso, aunque ya no es necesario aquí

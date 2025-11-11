@@ -23,7 +23,8 @@ function AuthPanel() {
         // Lógica de Registro (Maneja el registro pero luego usa login)
         // ==========================================================
         if (!isLoginMode) {
-            const registerEndpoint = 'http://localhost:5000/auth/register';
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; 
+const registerEndpoint = `${API_BASE_URL}/auth/register`; // 💡 Usa la nueva constante
             const registerPayload = {
                 email,
                 password,
