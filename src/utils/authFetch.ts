@@ -23,8 +23,8 @@ export const authFetch = async (endpoint: string, options: RequestInit = {}): Pr
     const finalOptions: RequestInit = {
         ...options,
         headers: {
-            ...defaultHeaders,
-            ...options.headers
+            ...options.headers,
+            ...defaultHeaders
         }
     };
 

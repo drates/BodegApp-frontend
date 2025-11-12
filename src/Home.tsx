@@ -34,9 +34,7 @@ function Home() {
         setLoadingUser(true);
         try {
             // PASO 1: Usar la ruta RELATIVA. authFetch completará la URL base.
-            const response = await authFetch('/api/auth/me', {
-                method: 'GET'
-            });
+            const response = await authFetch('/api/auth/me');
 
             // PASO 2: Leer y parsear el cuerpo JSON de la respuesta
             const data = await response.json();
