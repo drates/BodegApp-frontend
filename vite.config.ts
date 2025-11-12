@@ -13,7 +13,7 @@ export default defineConfig({
   // ==========================================================
   // Fuerza a Vite a generar rutas de activos (assets) relativas a la raíz.
   // Esto es crucial para que Azure SWA encuentre el archivo main.js.
-  base: './', 
+  base: '/', 
   
   build: {
     // Recomendado: Baja el target para máxima compatibilidad con el módulo script.
