@@ -1,26 +1,22 @@
-/**
- * Función wrapper para hacer fetch con el token de autenticación.
- * * NOTA: Esta función usa rutas relativas (ej: '/items/123') para que Azure Static Web Apps
- * pueda encaminar la solicitud correctamente a la API de backend.
- * * @param endpoint Ruta relativa de la API (ej: '/items/123', '/ingreso'). NO debe incluir la URL base.
- * @param options Opciones estándar de fetch.
- * @returns Promesa que resuelve en el objeto Response de fetch.
- */
-
 import { API_BASE_URL } from './config';
 
+/**
+ * Función wrapper para hacer fetch con el token de autenticación.
+ * @param endpoint Ruta relativa de la API (ej: '/items/123', '/auth/login')
+ * @param options Opciones estándar de fetch
+ * @returns Promesa que resuelve en el objeto Response de fetch
+ */
 export const authFetch = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
-    
-    // ✅ Se elimina la importación de 'useAuth' (TS6133) y la dependencia de 'config' (TS2307).
-    
     const token = localStorage.getItem('token');
-    
-    // Aseguramos que la URL sea el endpoint relativo para el proxy de SWA
-const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+
+    // Construimos la URL final (absoluta si no empieza con http)
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+
+    // DEBUG: Mostrar la URL y método
+    console.log(`[authFetch] → ${options.method || 'GET'} ${url}`);
 
     const defaultHeaders = {
         'Content-Type': 'application/json',
-        // Si hay token, lo adjuntamos
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
 
@@ -28,12 +24,20 @@ const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}
         ...options,
         headers: {
             ...defaultHeaders,
-            ...options.headers // Permite sobrescribir headers
-        },
+            ...options.headers
+        }
     };
-    
-    // Si la llamada falla por 401 (Unauthorized), se manejará en el componente que llame a authFetch
-    const response = await fetch(url, finalOptions);
 
-    return response;
+    try {
+        const response = await fetch(url, finalOptions);
+
+        // DEBUG: Mostrar código de estado
+        console.log(`[authFetch] ← ${response.status} ${response.statusText}`);
+
+        return response;
+    } catch (error) {
+        // DEBUG: Mostrar error de red
+        console.error(`[authFetch][ERROR] Fallo de red al llamar a ${url}:`, error);
+        throw new Error('Error de red. Verifica tu conexión o intenta más tarde.');
+    }
 };
