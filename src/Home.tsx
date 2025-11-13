@@ -96,6 +96,11 @@ function Home({ userInfo }: Props) {
     }}>
         {/* Columna izquierda: nombre y slogan */}
         <div style={{ flex: '1 1 auto', minWidth: '160px' }}>
+            <img 
+        src="/logo.png" 
+        alt="Logo BodegaFeliz"
+        style={{ width: '20px', height: '20px' }}
+    />
             <h1 style={{ margin: 0, fontSize: '1.3rem' }}>BodegaFeliz</h1>
             <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
                 Inventario simple y eficiente
