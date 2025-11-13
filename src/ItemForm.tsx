@@ -38,7 +38,7 @@ function ItemForm({ onItemCreated }: Props) {
 
             // 1. Ejecutar el POST de Ingreso
             // 🛑 CORRECCIÓN: Usar ruta RELATIVA. authFetch manejará la URL base.
-            const response = await authFetch("/ingreso", {
+            const response = await authFetch("/api/ingreso", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newItem)
