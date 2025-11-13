@@ -96,7 +96,7 @@ function Home({ userInfo }: Props) {
                 <div>
                     <h1 style={{ margin: 0 }}>BodegApp</h1>
                     <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9 }}>
-                        Inventario simple y eficiente - para todo tipo de negocios
+                        Inventario simple y eficiente
                     </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
