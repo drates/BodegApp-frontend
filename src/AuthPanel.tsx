@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAuth } from './AuthContext'; // Importamos el hook useAuth
 import { authFetch } from './utils/authFetch'; // Importamos authFetch para registro
 import Spinner from './Spinner'; // Asumo que tienes un componente Spinner
 

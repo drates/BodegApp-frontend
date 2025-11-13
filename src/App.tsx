@@ -7,7 +7,13 @@ import { authFetch } from './utils/authFetch';
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState(null);
+type UserInfo = {
+  email: string;
+  role: string;
+  companyName: string;
+};
+
+const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   useEffect(() => {
     const validateSession = async () => {
@@ -43,7 +49,7 @@ function App() {
   }
 
   if (!userInfo) return <Login />;
-  if (userInfo.role === 'SuperAdmin') return <SuperAdminPanel />;
+  if (userInfo.role === 'SuperAdmin') return <SuperAdminPanel userInfo={userInfo} />;
   return <Home userInfo={userInfo} />;
 }
 

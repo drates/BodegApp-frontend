@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
 import { authFetch } from './utils/authFetch';
 import Spinner from './Spinner';
 
@@ -11,16 +10,21 @@ interface MetricsData {
     tablaPorUsuario: any[];
 }
 
+type Props = {
+    userInfo: {
+        email: string;
+        role: string;
+        companyName: string;
+    };
+};
 
-function SuperAdminPanel() {
-    // ✅ CORRECCIÓN TS6133: Se elimina 'logout' para que no se declare pero no se use.
-    const { isSuperAdmin } = useAuth(); 
+function SuperAdminPanel({ userInfo }: Props) {
     const [metrics, setMetrics] = useState<MetricsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // Si el usuario no es SuperAdmin, redirigir o mostrar un mensaje
-    if (!isSuperAdmin) {
+    if (userInfo.role !== 'SuperAdmin') {
         return (
             <div className="p-6 text-center text-red-600 font-bold">
                 Acceso Denegado. Se requiere rol de Super Administrador.
@@ -41,7 +45,6 @@ function SuperAdminPanel() {
                     throw new Error(`Error ${response.status}: No se pudieron cargar las métricas.`);
                 }
                 
-                // Parseamos el JSON del cuerpo de la respuesta (esto resuelve el TS2739 de la ejecución anterior)
                 const data: MetricsData = await response.json(); 
                 setMetrics(data);
 
@@ -64,7 +67,6 @@ function SuperAdminPanel() {
         return <div className="p-6 text-center text-red-600 font-bold">{error}</div>;
     }
 
-    // Renderizado de las métricas (usando datos de 'metrics')
     return (
         <div className="p-8 bg-gray-50 min-h-screen">
             <h1 className="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2">Panel de Super Administración</h1>

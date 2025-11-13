@@ -5,11 +5,17 @@ import StockAlert from './StockAlert';
 import HistorialMovimientos from './HistorialMovimientos';
 import ItemList from './ItemList';
 import Spinner from './Spinner';
-import { authFetch } from './utils/authFetch';
 
-function Home() {
+type Props = {
+    userInfo: {
+        email: string;
+        role: string;
+        companyName: string;
+    };
+};
+
+function Home({ userInfo }: Props) {
     const [activePanel, setActivePanel] = useState<string | null>(null);
-    const [userInfo, setUserInfo] = useState<any>(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [reloadFlag, setReloadFlag] = useState(0); 
@@ -31,26 +37,7 @@ function Home() {
     };
 
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setLoadingUser(false);
-                return;
-            }
-
-            try {
-                const res = await authFetch('/api/auth/me');
-                if (!res.ok) throw new Error('401');
-                const data = await res.json();
-                setUserInfo(data);
-            } catch {
-                logout();
-            } finally {
-                setLoadingUser(false);
-            }
-        };
-
-        fetchUserInfo();
+        setLoadingUser(false);
     }, []);
 
     const navButtons = [
@@ -94,7 +81,7 @@ function Home() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <span style={{ fontSize: '0.95rem' }}>
-                        Usuario: <strong>{userInfo?.email}</strong>
+                        Usuario: <strong>{userInfo.email}</strong>
                     </span>
                     <button 
                         onClick={logout}
