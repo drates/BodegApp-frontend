@@ -78,46 +78,58 @@ function Home({ userInfo }: Props) {
 
     return (
         <div style={{ fontFamily: 'Arial, sans-serif' }}>
-            {/* Header fijo */}
-            <div style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1000,
-                background: '#0077cc',
-                color: '#fff',
-                padding: '1rem 0.3rem',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-                <div>
-                    <h1 style={{ margin: 0 }}>BodegApp</h1>
-                    <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9 }}>
-                        Inventario simple y eficiente
-                    </p>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span style={{ fontSize: '0.95rem' }}>
-                        Usuario: <strong>{userInfo.email}</strong>
-                    </span>
-                    <button 
-                        onClick={logout}
-                        style={{
-                            padding: '8px 15px',
-                            backgroundColor: '#dc3545',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </div>
+    {/* Header fijo */}
+    <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        background: '#0077cc',
+        color: '#fff',
+        padding: '1rem 0.6rem',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap'
+    }}>
+        {/* Columna izquierda: nombre y slogan */}
+        <div style={{ flex: '1 1 auto', minWidth: '180px' }}>
+            <h1 style={{ margin: 0, fontSize: '1.4rem' }}>BodegApp</h1>
+            <p style={{ margin: 0, fontSize: '0.95rem', opacity: 0.9 }}>
+                Inventario simple y eficiente
+            </p>
+        </div>
+
+        {/* Columna derecha: panel de usuario */}
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            textAlign: 'right',
+            fontSize: '0.85rem',
+            gap: '0.3rem',
+            marginTop: '0.2rem'
+        }}>
+            <span style={{ fontWeight: 'bold' }}>Usuario:</span>
+            <span>{userInfo.email}</span>
+            <button 
+                onClick={logout}
+                style={{
+                    padding: '4px 10px',
+                    fontSize: '0.75rem',
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                }}
+            >
+                Cerrar sesión
+            </button>
+        </div>
+    </div>
 
             {/* Contenido principal */}
             <div style={{ padding: '20px', maxWidth: '1200px', margin: '120px auto 0 auto' }}>
