@@ -95,9 +95,9 @@ function Home({ userInfo }: Props) {
         flexWrap: 'wrap'
     }}>
         {/* Columna izquierda: nombre y slogan */}
-        <div style={{ flex: '1 1 auto', minWidth: '180px' }}>
-            <h1 style={{ margin: 0, fontSize: '1.4rem' }}>BodegApp</h1>
-            <p style={{ margin: 0, fontSize: '0.95rem', opacity: 0.9 }}>
+        <div style={{ flex: '1 1 auto', minWidth: '170px' }}>
+            <h1 style={{ margin: 0, fontSize: '1.3rem' }}>BodegApp</h1>
+            <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.9 }}>
                 Inventario simple y eficiente
             </p>
         </div>
@@ -108,7 +108,7 @@ function Home({ userInfo }: Props) {
             flexDirection: 'column',
             alignItems: 'flex-end',
             textAlign: 'right',
-            fontSize: '0.85rem',
+            fontSize: '0.75rem',
             gap: '0.3rem',
             marginTop: '0.2rem'
         }}>
@@ -132,7 +132,7 @@ function Home({ userInfo }: Props) {
     </div>
 
             {/* Contenido principal */}
-            <div style={{ padding: '20px', maxWidth: '1200px', margin: '120px auto 0 auto' }}>
+            <div style={{ padding: '10px', maxWidth: '1200px', margin: '100px auto 0 auto' }}>
                 <StockAlert lowStockItems={lowStockItems} />
 
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' }}>

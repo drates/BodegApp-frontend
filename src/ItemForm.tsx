@@ -116,7 +116,7 @@ function ItemForm({ onItemCreated }: Props) {
             <form onSubmit={handleSubmit} style={formStyle}>
                 <h2 style={{ color: '#007bff', borderBottom: '2px solid #007bff', paddingBottom: '10px', marginBottom: '20px' }}>
                     <span role="img" aria-label="icono-entrada" style={{ marginRight: '10px' }}>⬆️</span>
-                    Ingresar Nuevo Stock (Entrada)
+                    Registrar Entrada
                 </h2>
 
                 {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando ingreso...</div>}
@@ -133,7 +133,7 @@ function ItemForm({ onItemCreated }: Props) {
                 </div>
 
                 <div style={inputContainerStyle}>
-                    <label style={labelStyle}>Nombre del Producto:</label>
+                    <label style={labelStyle}>Nombre del Producto (solo productos nuevos):</label>
                     <input
                         type="text"
                         placeholder="Nombre descriptivo"
