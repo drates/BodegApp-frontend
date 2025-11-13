@@ -36,7 +36,7 @@ const StockAlert: React.FC<StockAlertProps> = ({ lowStockItems }) => {
                         padding: '0.3rem 0.6rem',
                         borderRadius: '4px',
                         cursor: 'pointer',
-                        fontSize: '0.9rem'
+                        fontSize: '0.8rem'
                     }}
                 >
                     {isExpanded ? 'Ocultar' : 'Ver detalles'}

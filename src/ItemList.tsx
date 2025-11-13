@@ -78,7 +78,7 @@ function ItemList() {
     return (
         <div style={{ padding: '2rem' }}>
             <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#007bff' }}>
-                Inventario Actual
+                📦Inventario
             </h2>
 
             <div style={{ marginBottom: '1rem' }}>

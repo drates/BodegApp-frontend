@@ -61,10 +61,10 @@ function Home({ userInfo }: Props) {
     }, []);
 
     const navButtons = [
-        { key: 'entrada', label: 'Ingresar Stock' },
-        { key: 'salida', label: 'Registrar Egreso' },
+        { key: 'entrada', label: 'Registrar Entrada' },
+        { key: 'salida', label: 'Registrar Salida' },
         { key: 'tabla', label: 'Ver Inventario' },
-        { key: 'movimientos', label: 'Historial' }
+        { key: 'movimientos', label: 'Movimientos recientes' }
     ];
 
     if (loadingUser) {
@@ -95,9 +95,9 @@ function Home({ userInfo }: Props) {
         flexWrap: 'wrap'
     }}>
         {/* Columna izquierda: nombre y slogan */}
-        <div style={{ flex: '1 1 auto', minWidth: '170px' }}>
+        <div style={{ flex: '1 1 auto', minWidth: '160px' }}>
             <h1 style={{ margin: 0, fontSize: '1.3rem' }}>BodegaFeliz</h1>
-            <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.9 }}>
+            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
                 Inventario simple y eficiente
             </p>
         </div>
@@ -108,7 +108,7 @@ function Home({ userInfo }: Props) {
             flexDirection: 'column',
             alignItems: 'flex-end',
             textAlign: 'right',
-            fontSize: '0.65rem',
+            fontSize: '0.70rem',
             gap: '0.3rem',
             marginTop: '0.2rem'
         }}>
