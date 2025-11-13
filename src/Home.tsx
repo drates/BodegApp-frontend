@@ -31,22 +31,32 @@ function Home() {
     
     // Función para obtener la información del usuario
     const fetchUserInfo = useCallback(async () => {
-        setLoadingUser(true);
-        try {
-            // PASO 1: Usar la ruta RELATIVA. authFetch completará la URL base.
-            const response = await authFetch('/api/auth/me');
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.warn('Token no disponible aún. Abortando fetchUserInfo.');
+        setLoadingUser(false);
+        return;
+    }
 
-            // PASO 2: Leer y parsear el cuerpo JSON de la respuesta
-            const data = await response.json();
-            setUserInfo(data);
-        } catch (error) {
-            console.error('Error al obtener info del usuario:', error);
-            // En caso de error (ej: token expirado 401), forzamos el logout.
-            logout(); 
-        } finally {
-            setLoadingUser(false);
+    setLoadingUser(true);
+    try {
+        const response = await authFetch('/api/auth/me');
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
         }
-    }, [logout]); // Dependencia de logout para useCallback
+
+        const data = await response.json();
+        setUserInfo(data);
+    } catch (error) {
+        console.error('Error al obtener info del usuario:', error);
+        logout(); 
+    } finally {
+        setLoadingUser(false);
+    }
+}, [logout]);
+ // Dependencia de logout para useCallback
 
     // 🔄 Efecto para cargar la info del usuario al montar el componente
     useEffect(() => {
