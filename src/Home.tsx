@@ -5,6 +5,7 @@ import StockAlert from './StockAlert';
 import HistorialMovimientos from './HistorialMovimientos';
 import ItemList from './ItemList';
 import Spinner from './Spinner';
+import { authFetch } from './utils/authFetch';
 
 type Props = {
     userInfo: {
@@ -17,8 +18,10 @@ type Props = {
 function Home({ userInfo }: Props) {
     const [activePanel, setActivePanel] = useState<string | null>(null);
     const [loadingUser, setLoadingUser] = useState(true);
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [reloadFlag, setReloadFlag] = useState(0); 
+    const [lowStockItems, setLowStockItems] = useState<
+        { productCode: string; productName: string; boxes: number }[]
+    >([]);
 
     const togglePanel = (panelName: string | null) => {
         setActivePanel(prev => (prev === panelName ? null : panelName));
@@ -27,8 +30,7 @@ function Home({ userInfo }: Props) {
     const handleReload = () => {
         setReloadFlag(prev => prev + 1);
         setActivePanel(null);
-        setShowSuccessAlert(true);
-        setTimeout(() => setShowSuccessAlert(false), 3000);
+        checkLowStock();
     };
 
     const logout = () => {
@@ -36,8 +38,26 @@ function Home({ userInfo }: Props) {
         window.location.href = '/';
     };
 
+    const checkLowStock = async () => {
+        try {
+            const response = await authFetch('/api/Items', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const critical = data.filter((item: any) => item.boxes < 3);
+            setLowStockItems(critical);
+        } catch (err) {
+            console.error("Error al verificar stock bajo:", err);
+        }
+    };
+
     useEffect(() => {
         setLoadingUser(false);
+        checkLowStock();
     }, []);
 
     const navButtons = [
@@ -101,10 +121,7 @@ function Home({ userInfo }: Props) {
 
             {/* Contenido principal */}
             <div style={{ padding: '20px', maxWidth: '1200px', margin: '120px auto 0 auto' }}>
-                <StockAlert 
-                    message="✅ Operación registrada con éxito. Inventario actualizado." 
-                    isVisible={showSuccessAlert} 
-                />
+                <StockAlert lowStockItems={lowStockItems} />
 
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' }}>
                     {navButtons.map(btn => (

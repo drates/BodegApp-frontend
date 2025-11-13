@@ -1,53 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface StockAlertProps {
-    message: string;
-    isVisible: boolean;
+    lowStockItems: { productCode: string; productName: string; boxes: number }[];
 }
 
 /**
- * Muestra un mensaje de alerta temporal (éxito o error) con un diseño simple.
+ * Muestra una alerta persistente con productos que tienen bajo stock (menos de 3 cajas).
  */
-const StockAlert: React.FC<StockAlertProps> = ({ message, isVisible }) => {
-    const [show, setShow] = useState(false);
-
-    useEffect(() => {
-        if (isVisible) {
-            setShow(true);
-            const timer = setTimeout(() => {
-                setShow(false);
-            }, 5000); // Se oculta después de 5 segundos
-            return () => clearTimeout(timer);
-        } else {
-            setShow(false);
-        }
-    }, [isVisible, message]);
-
-    if (!show) return null;
-
-    // Determina si es éxito (verde) o error (rojo) basado en el mensaje
-    const isSuccess = message.startsWith("✅");
-    const backgroundColor = isSuccess ? '#28a745' : '#dc3545'; // verde o rojo
-    const borderColor = isSuccess ? '#218838' : '#c82333';
+const StockAlert: React.FC<StockAlertProps> = ({ lowStockItems }) => {
+    if (lowStockItems.length === 0) return null;
 
     return (
-        <div 
-            style={{
-                position: 'fixed',
-                top: '20px',
-                right: '20px',
-                padding: '15px 25px',
-                backgroundColor: backgroundColor,
-                color: '#fff',
-                borderRadius: '8px',
-                border: `1px solid ${borderColor}`,
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-                fontWeight: 'bold',
-                animation: 'fadeIn 0.5s'
-            }}
-        >
-            {message}
+        <div style={{
+            backgroundColor: '#fff3cd',
+            color: '#856404',
+            border: '1px solid #ffeeba',
+            borderRadius: '6px',
+            padding: '1rem',
+            marginBottom: '1.5rem',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}>
+            <strong>⚠️ Alerta de stock bajo:</strong>
+            <ul style={{ marginTop: '0.5rem', paddingLeft: '1.2rem' }}>
+                {lowStockItems.map((item, index) => (
+                    <li key={index}>
+                        <strong>{item.productCode}</strong> — {item.productName} ({item.boxes} cajas restantes)
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
