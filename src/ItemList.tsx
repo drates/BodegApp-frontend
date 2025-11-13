@@ -2,37 +2,36 @@ import { useState, useEffect } from 'react';
 import { authFetch } from './utils/authFetch';
 import Spinner from './Spinner';
 
-// Definiciones de tipos consistentes
 type Item = {
-    id: string; // ✅ CORRECCIÓN: ID DE TIPO STRING
+    id: string;
     productCode: string;
     name: string;
     description: string;
     boxes: number;
     unitsPerBox: number;
     totalUnits: number;
-    lastMovement: string; // Asumiendo que es una fecha/hora en string
+    lastMovement: string;
 };
 
-// ItemBatch es similar a Item, por lo que podemos usar el mismo tipo
-type ItemBatch = Item; 
-
+type ItemBatch = Item;
 
 function ItemList() {
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Usamos ItemBatch (que es Item) para asegurar la compatibilidad con EditItemForm
-    const [itemToEdit, setItemToEdit] = useState<ItemBatch | null>(null); 
+    const [itemToEdit, setItemToEdit] = useState<ItemBatch | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchItems = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await authFetch('/items', { method: 'GET' });
-            
+            const response = await authFetch('/items', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
             if (!response.ok) {
                 if (response.status === 401) {
                     setError("Sesión expirada. Por favor, inicie sesión nuevamente.");
@@ -63,9 +62,7 @@ function ItemList() {
         setIsModalOpen(true);
     };
 
-    
-
-    const filteredItems = items.filter(item => 
+    const filteredItems = items.filter(item =>
         item.productCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -90,10 +87,10 @@ function ItemList() {
                     placeholder="Buscar por código o nombre..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    style={{ 
-                        width: '100%', 
-                        padding: '10px', 
-                        border: '1px solid #ccc', 
+                    style={{
+                        width: '100%',
+                        padding: '10px',
+                        border: '1px solid #ccc',
                         borderRadius: '6px',
                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
                     }}
@@ -101,10 +98,10 @@ function ItemList() {
             </div>
 
             <div style={{ overflowX: 'auto' }}>
-                <table style={{ 
-                    width: '100%', 
-                    borderCollapse: 'collapse', 
-                    minWidth: '700px', 
+                <table style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    minWidth: '700px',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                     borderRadius: '8px',
                     overflow: 'hidden'
@@ -132,15 +129,15 @@ function ItemList() {
                                 <td style={{ padding: '12px', textAlign: 'right', color: item.totalUnits === 0 ? 'red' : 'inherit' }}>{item.totalUnits}</td>
                                 <td style={{ padding: '12px', fontSize: '0.85em' }}>{item.lastMovement ? new Date(item.lastMovement).toLocaleString() : 'N/A'}</td>
                                 <td style={{ padding: '12px', textAlign: 'center' }}>
-                                    <button 
+                                    <button
                                         onClick={() => handleEditClick(item)}
-                                        style={{ 
-                                            backgroundColor: '#ffc107', 
-                                            color: '#333', 
-                                            border: 'none', 
-                                            padding: '6px 10px', 
-                                            borderRadius: '4px', 
-                                            cursor: 'pointer' 
+                                        style={{
+                                            backgroundColor: '#ffc107',
+                                            color: '#333',
+                                            border: 'none',
+                                            padding: '6px 10px',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
                                         }}
                                     >
                                         Editar
@@ -151,7 +148,7 @@ function ItemList() {
                     </tbody>
                 </table>
             </div>
-            
+
             {filteredItems.length === 0 && !loading && (
                 <div style={{ marginTop: '20px', textAlign: 'center', color: '#6c757d' }}>
                     No se encontraron ítems en el inventario que coincidan con la búsqueda.
@@ -159,27 +156,27 @@ function ItemList() {
             )}
 
             {isModalOpen && itemToEdit && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     zIndex: 20
                 }}>
-                    <div style={{ 
-                        backgroundColor: 'white', 
-                        padding: '20px', 
-                        borderRadius: '10px', 
-                        maxWidth: '90%', 
-                        width: '500px', 
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        maxWidth: '90%',
+                        width: '500px',
                         boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)'
                     }}>
-                       
+                        {/* Modal content goes here */}
                     </div>
                 </div>
             )}

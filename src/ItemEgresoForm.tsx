@@ -5,19 +5,20 @@ type Props = {
     onItemUpdated: () => void;
 };
 
-// Se eliminó el tipo 'ItemBatch' ya que no se utiliza directamente en este componente (TS6196)
-
 function ItemEgresoForm({ onItemUpdated }: Props) {
-    
-    // 🛑 CORRECCIÓN 1: Declaración de Estados (Soluciona el ReferenceError)
     const [productCode, setProductCode] = useState('');
     const [unitsPerBox, setUnitsPerBox] = useState(0);
     const [boxesToRemove, setBoxesToRemove] = useState(0);
-    const [errorMessage, setErrorMessage] = useState(''); // Se usa para feedback de error/éxito
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setErrorMessage(''); // Limpiamos el error previo
+        setErrorMessage('');
+
+        if (!productCode.trim()) {
+            setErrorMessage("Debes ingresar un código de producto.");
+            return;
+        }
 
         if (boxesToRemove < 1 || unitsPerBox < 1) {
             setErrorMessage("Debes ingresar valores válidos (mayores a cero).");
@@ -25,46 +26,44 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
         }
 
         const egresoData = {
-            productCode: productCode,
+            productCode,
             boxes: boxesToRemove,
-            unitsPerBox: unitsPerBox 
+            unitsPerBox
         };
 
         try {
             const response = await authFetch('/egreso', {
                 method: 'POST',
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(egresoData),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                // Si la API devuelve un error (ej. 400 Bad Request, 404 Not Found)
                 setErrorMessage(data.message || "Error al registrar la salida. Verifique el código y la cantidad.");
                 return;
             }
 
-            // Éxito
             setErrorMessage(`✅ Salida de ${boxesToRemove} cajas registrada para el producto ${productCode}.`);
             setProductCode('');
             setUnitsPerBox(0);
             setBoxesToRemove(0);
-            onItemUpdated(); // Notifica al componente padre para recargar la lista
-            
+            onItemUpdated();
+
         } catch (error) {
             console.error("Fallo de red o del servidor:", error);
             setErrorMessage("Error de conexión con el servidor. Intente de nuevo.");
         }
     };
 
-
     return (
-        <form onSubmit={handleSubmit} style={{ 
-            maxWidth: '600px', 
-            margin: '0 auto', 
-            padding: '2rem', 
-            backgroundColor: '#fff', 
-            borderRadius: '8px', 
+        <form onSubmit={handleSubmit} style={{
+            maxWidth: '600px',
+            margin: '0 auto',
+            padding: '2rem',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
             borderLeft: '5px solid #dc3545'
         }}>
@@ -74,9 +73,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
             <p style={{ marginBottom: '1rem', color: '#6c757d' }}>Retirar stock de un producto existente.</p>
 
             <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Código del Producto:
-                </label>
+                <label style={{ display: 'block', marginBottom: '0.25rem' }}>Código del Producto:</label>
                 <input
                     type="text"
                     placeholder="Código (ej: A001)"
@@ -86,31 +83,29 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
                     style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
-            
+
             <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Unidades por Caja:
-                </label>
+                <label style={{ display: 'block', marginBottom: '0.25rem' }}>Unidades por Caja:</label>
                 <input
                     type="number"
                     placeholder="Unidades"
                     value={unitsPerBox}
                     onChange={e => setUnitsPerBox(Number(e.target.value))}
                     required
+                    min="1"
                     style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem' }}>
-                    Cajas a retirar:
-                </label>
+                <label style={{ display: 'block', marginBottom: '0.25rem' }}>Cajas a retirar:</label>
                 <input
                     type="number"
                     placeholder="Cantidad de cajas"
                     value={boxesToRemove}
                     onChange={e => setBoxesToRemove(Number(e.target.value))}
                     required
+                    min="1"
                     style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
             </div>
