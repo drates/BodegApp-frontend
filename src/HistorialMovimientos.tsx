@@ -28,8 +28,9 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
         setError('');
 
         const endpoint = filtro
-            ? `/stockmovements?productCode=${filtro}`
-            : `/stockmovements`;
+    ? `/api/StockMovements?productCode=${filtro}`
+    : `/api/StockMovements`;
+
 
         authFetch(endpoint, {
             method: "GET",
