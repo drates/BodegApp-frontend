@@ -110,11 +110,9 @@ function ItemList() {
                         <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
                             <th style={{ padding: '12px', textAlign: 'left' }}>Código</th>
                             <th style={{ padding: '12px', textAlign: 'left' }}>Nombre</th>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>Descripción</th>
                             <th style={{ padding: '12px', textAlign: 'right' }}>Cajas</th>
                             <th style={{ padding: '12px', textAlign: 'right' }}>Unidades/Caja</th>
                             <th style={{ padding: '12px', textAlign: 'right' }}>Total Unidades</th>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>Último Movimiento</th>
                             <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
                         </tr>
                     </thead>
@@ -123,11 +121,9 @@ function ItemList() {
                             <tr key={item.id} style={{ borderBottom: '1px solid #eee', backgroundColor: item.boxes === 0 ? '#ffdddd' : '#fff', transition: 'background-color 0.2s' }}>
                                 <td style={{ padding: '12px' }}>{item.productCode}</td>
                                 <td style={{ padding: '12px' }}>{item.name}</td>
-                                <td style={{ padding: '12px', fontSize: '0.9em' }}>{item.description}</td>
                                 <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{item.boxes}</td>
                                 <td style={{ padding: '12px', textAlign: 'right' }}>{item.unitsPerBox}</td>
                                 <td style={{ padding: '12px', textAlign: 'right', color: item.totalUnits === 0 ? 'red' : 'inherit' }}>{item.totalUnits}</td>
-                                <td style={{ padding: '12px', fontSize: '0.85em' }}>{item.lastMovement ? new Date(item.lastMovement).toLocaleString() : 'N/A'}</td>
                                 <td style={{ padding: '12px', textAlign: 'center' }}>
                                     <button
                                         onClick={() => handleEditClick(item)}
