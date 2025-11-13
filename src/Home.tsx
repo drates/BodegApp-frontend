@@ -40,15 +40,9 @@ function Home() {
 
     setLoadingUser(true);
     try {
-        const response = await authFetch('/api/auth/me');
+        const { userInfo } = useAuth();
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
-        }
-
-        const data = await response.json();
-        setUserInfo(data);
+        setUserInfo(userInfo);
     } catch (error) {
         console.error('Error al obtener info del usuario:', error);
         logout(); 
