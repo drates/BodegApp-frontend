@@ -32,7 +32,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
         };
 
         try {
-            const response = await authFetch('/egreso', {
+            const response = await authFetch('/api/egreso', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(egresoData),
