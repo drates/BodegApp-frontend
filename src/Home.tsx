@@ -4,7 +4,6 @@ import ItemEgresoForm from './ItemEgresoForm';
 import StockAlert from './StockAlert';
 import HistorialMovimientos from './HistorialMovimientos';
 import ItemList from './ItemList';
-import { authFetch } from './utils/authFetch';
 import Spinner from './Spinner';
 import { useAuth } from './AuthContext'; // Importamos useAuth para logout
 

@@ -3,7 +3,6 @@ import { API_BASE_URL } from './utils/config';
 import { authFetch } from './utils/authFetch';
 
 const LOGIN_ENDPOINT = `${API_BASE_URL}/api/auth/login`;
-const ME_ENDPOINT = `${API_BASE_URL}/api/auth/me`;
 
 type UserRole = 'Admin' | 'User' | 'SuperAdmin' | 'Guest';
 
