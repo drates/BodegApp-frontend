@@ -8,7 +8,22 @@ const REGISTER_ENDPOINT = '/api/auth/register';
 
 function AuthPanel() {
     // Obtenemos la función login del contexto (que ahora maneja la llamada a la API, el token y el rol)
-    const { login } = useAuth(); 
+const login = async (email: string, password: string) => {
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || 'Credenciales inválidas');
+  }
+
+  const { token } = await res.json();
+  localStorage.setItem('token', token);
+  window.location.href = '/home'; // ✅ redirige al dashboard
+};
 
     const [isLoginMode, setIsLoginMode] = useState(true);
     const [email, setEmail] = useState('');

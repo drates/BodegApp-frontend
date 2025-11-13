@@ -1,62 +1,58 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import ItemForm from './ItemForm';
 import ItemEgresoForm from './ItemEgresoForm';
 import StockAlert from './StockAlert';
 import HistorialMovimientos from './HistorialMovimientos';
 import ItemList from './ItemList';
 import Spinner from './Spinner';
-import { useAuth } from './AuthContext'; // Importamos useAuth para logout
+import { authFetch } from './utils/authFetch';
 
 function Home() {
-    const { logout } = useAuth(); // Usamos el logout del contexto
     const [activePanel, setActivePanel] = useState<string | null>(null);
     const [userInfo, setUserInfo] = useState<any>(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-    // ✅ Mantenemos reloadFlag para forzar el re-montaje/re-fetch de ItemList/HistorialMovimientos
     const [reloadFlag, setReloadFlag] = useState(0); 
 
     const togglePanel = (panelName: string | null) => {
         setActivePanel(prev => (prev === panelName ? null : panelName));
     };
 
-    // Función para forzar la recarga de datos en ItemList y HistorialMovimientos
     const handleReload = () => {
         setReloadFlag(prev => prev + 1);
-        setActivePanel(null); // Opcional: Cerrar el formulario después de la acción
+        setActivePanel(null);
         setShowSuccessAlert(true);
-        setTimeout(() => setShowSuccessAlert(false), 3000); // Ocultar alerta después de 3s
+        setTimeout(() => setShowSuccessAlert(false), 3000);
     };
-    
-    // Función para obtener la información del usuario
-    const fetchUserInfo = useCallback(async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.warn('Token no disponible aún. Abortando fetchUserInfo.');
-        setLoadingUser(false);
-        return;
-    }
 
-    setLoadingUser(true);
-    try {
-        const { userInfo } = useAuth();
+    const logout = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+    };
 
-        setUserInfo(userInfo);
-    } catch (error) {
-        console.error('Error al obtener info del usuario:', error);
-        logout(); 
-    } finally {
-        setLoadingUser(false);
-    }
-}, [logout]);
- // Dependencia de logout para useCallback
-
-    // 🔄 Efecto para cargar la info del usuario al montar el componente
     useEffect(() => {
-        fetchUserInfo();
-    }, [fetchUserInfo]);
+        const fetchUserInfo = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setLoadingUser(false);
+                return;
+            }
 
-    // Define los botones de navegación
+            try {
+                const res = await authFetch('/api/auth/me');
+                if (!res.ok) throw new Error('401');
+                const data = await res.json();
+                setUserInfo(data);
+            } catch {
+                logout();
+            } finally {
+                setLoadingUser(false);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
+
     const navButtons = [
         { key: 'entrada', label: 'Ingresar Stock' },
         { key: 'salida', label: 'Registrar Egreso' },
@@ -74,16 +70,34 @@ function Home() {
     }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-            {/* Encabezado */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '20px' }}>
-                <h1 style={{ margin: 0, color: '#007bff' }}>Sistema de Gestión de Inventario</h1>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ marginRight: '15px', color: '#333' }}>
-                        Bienvenido, **{userInfo?.companyName || 'Usuario'}** ({userInfo?.role})
+        <div style={{ fontFamily: 'Arial, sans-serif' }}>
+            {/* Header fijo */}
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000,
+                background: '#0077cc',
+                color: '#fff',
+                padding: '1rem 0.3rem',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+            }}>
+                <div>
+                    <h1 style={{ margin: 0 }}>BodegApp</h1>
+                    <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9 }}>
+                        Inventario simple y eficiente - para todo tipo de negocios
+                    </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <span style={{ fontSize: '0.95rem' }}>
+                        Usuario: <strong>{userInfo?.email}</strong>
                     </span>
                     <button 
-                        onClick={logout} // Usamos la función logout del contexto
+                        onClick={logout}
                         style={{
                             padding: '8px 15px',
                             backgroundColor: '#dc3545',
@@ -98,15 +112,13 @@ function Home() {
                 </div>
             </div>
 
-            {/* Alerta de Éxito */}
-            <StockAlert 
-                message="✅ Operación registrada con éxito. Inventario actualizado." 
-                isVisible={showSuccessAlert} 
-            />
-
             {/* Contenido principal */}
-            <div style={{ marginTop: '20px' }}>
-                {/* Navegación/Botones de Acción */}
+            <div style={{ padding: '20px', maxWidth: '1200px', margin: '120px auto 0 auto' }}>
+                <StockAlert 
+                    message="✅ Operación registrada con éxito. Inventario actualizado." 
+                    isVisible={showSuccessAlert} 
+                />
+
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' }}>
                     {navButtons.map(btn => (
                         <button
@@ -128,12 +140,8 @@ function Home() {
                     ))}
                 </div>
 
-                {/* Panels */}
-                {/* Las funciones onItemCreated y onItemUpdated llaman a handleReload */}
                 {activePanel === 'entrada' && <ItemForm onItemCreated={handleReload} />}
                 {activePanel === 'salida' && <ItemEgresoForm onItemUpdated={handleReload} />}
-                
-                {/* ✅ Estos componentes usarán el 'reloadFlag' en su key para forzar la recarga desde el servidor */}
                 {activePanel === 'tabla' && <ItemList key={reloadFlag} />} 
                 {activePanel === 'movimientos' && <HistorialMovimientos key={reloadFlag} />}
             </div>

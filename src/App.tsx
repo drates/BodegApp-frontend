@@ -1,57 +1,50 @@
-
-// Asume que todos estos componentes están definidos en archivos separados o dentro de este archivo (si es una sola file app)
-import { AuthProvider, useAuth } from './AuthContext'; 
+import { useEffect, useState } from 'react';
 import Login from './Login';
-import Home from './Home'; 
-import SuperAdminPanel from './SuperAdminPanel'; 
-import Spinner from './Spinner'; // Este componente debe ser definido o reemplazado
-
-// Componente que decide qué renderizar basado en la autenticación
-const AppRouter = () => {
-    // Obtenemos el estado de autenticación y el estado de carga
-    const { isLoggedIn, isSuperAdmin, loading } = useAuth();
-    
-    // **Lógica de Renderizado:**
-    
-    // 1. Mostrar carga mientras el contexto verifica el token/rol
-    if (loading) {
-        return (
-            <div style={{ 
-                minHeight: '100vh', 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                flexDirection: 'column', 
-                fontSize: '1.2rem' 
-            }}>
-                {/* Asumiendo que Spinner es un componente visual de carga */}
-                <Spinner /> 
-                <p style={{ marginTop: '20px' }}>Cargando datos de sesión...</p>
-            </div>
-        );
-    }
-    
-    if (!isLoggedIn) {
-        // Si no está logueado, muestra la pantalla de Login
-        return <Login />;
-    }
-
-    if (isSuperAdmin) {
-        // Si es SuperAdmin, muestra el panel especial
-        return <SuperAdminPanel />; 
-    }
-    
-    // Por defecto, si está logueado pero no es SuperAdmin, va a Home
-    return <Home />;
-};
+import Home from './Home';
+import SuperAdminPanel from './SuperAdminPanel';
+import Spinner from './Spinner';
+import { authFetch } from './utils/authFetch';
 
 function App() {
-    return (
-        // Envolvemos toda la aplicación con el proveedor de autenticación
-        <AuthProvider>
-            <AppRouter />
-        </AuthProvider>
-    );
+  const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const validateSession = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await authFetch('/api/auth/me');
+        if (!res.ok) throw new Error('401');
+        const data = await res.json();
+        setUserInfo(data);
+      } catch {
+        localStorage.removeItem('token');
+        setUserInfo(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    validateSession();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+        <Spinner />
+        <p>Cargando sesión...</p>
+      </div>
+    );
+  }
+
+  if (!userInfo) return <Login />;
+  if (userInfo.role === 'SuperAdmin') return <SuperAdminPanel />;
+  return <Home userInfo={userInfo} />;
 }
 
 export default App;

@@ -8,11 +8,8 @@ import { API_BASE_URL } from './config';
  */
 export const authFetch = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
     const token = localStorage.getItem('token');
-
-    // Construimos la URL final (absoluta si no empieza con http)
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
 
-    // DEBUG: Mostrar la URL y método
     console.log(`[authFetch] → ${options.method || 'GET'} ${url}`);
 
     const defaultHeaders = {
@@ -31,12 +28,18 @@ export const authFetch = async (endpoint: string, options: RequestInit = {}): Pr
     try {
         const response = await fetch(url, finalOptions);
 
-        // DEBUG: Mostrar código de estado
         console.log(`[authFetch] ← ${response.status} ${response.statusText}`);
+
+        // ✅ Manejo automático de sesión expirada
+        if (response.status === 401) {
+            console.warn('[authFetch] Token inválido. Redirigiendo al login...');
+            localStorage.removeItem('token');
+            window.location.href = '/';
+            throw new Error('Sesión expirada');
+        }
 
         return response;
     } catch (error) {
-        // DEBUG: Mostrar error de red
         console.error(`[authFetch][ERROR] Fallo de red al llamar a ${url}:`, error);
         throw new Error('Error de red. Verifica tu conexión o intenta más tarde.');
     }
