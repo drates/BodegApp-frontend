@@ -39,21 +39,21 @@ function Home({ userInfo }: Props) {
     };
 
     const checkLowStock = async () => {
-        try {
-            const response = await authFetch('/api/Items', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
+    try {
+        const response = await authFetch('/api/ItemBatch/alertas', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
 
-            if (!response.ok) return;
+        if (!response.ok) return;
 
-            const data = await response.json();
-            const critical = data.filter((item: any) => item.boxes < 3);
-            setLowStockItems(critical);
-        } catch (err) {
-            console.error("Error al verificar stock bajo:", err);
-        }
-    };
+        const data = await response.json();
+        setLowStockItems(data);
+    } catch (err) {
+        console.error("Error al verificar stock bajo:", err);
+    }
+};
+
 
     useEffect(() => {
         setLoadingUser(false);
