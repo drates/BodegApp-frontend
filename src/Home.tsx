@@ -87,7 +87,7 @@ function Home({ userInfo }: Props) {
         zIndex: 1000,
         background: '#0077cc',
         color: '#fff',
-        padding: '0.7rem 0.5rem',
+        padding: '0.3rem 0.2rem',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -101,7 +101,7 @@ function Home({ userInfo }: Props) {
         alt="Logo BodegaFeliz"
         style={{ width: '25px', height: '28px' }}
     />
-            <h1 style={{ margin: 0, fontSize: '1.3rem' }}>BodegaFeliz</h1>
+            <h1 style={{ margin: 0, fontSize: '1.2rem' }}>BodegaFeliz</h1>
             <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
                 Inventario simple y eficiente
             </p>
@@ -115,7 +115,7 @@ function Home({ userInfo }: Props) {
             textAlign: 'right',
             fontSize: '0.70rem',
             gap: '0.2rem',
-            marginTop: '0.2rem'
+            marginTop: '0.4rem'
         }}>
             <span style={{ fontWeight: 'bold' }}>Usuario:</span>
             <span>{userInfo.email}</span>
