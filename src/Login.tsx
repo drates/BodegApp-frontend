@@ -2,7 +2,7 @@ import AuthPanel from './AuthPanel';
 
 function Login() {
   return (
-    <div style={{ padding: '2rem', marginTop: '120px' }}>
+    <div style={{ padding: '0.2rem', marginTop: '20px' }}>
       {/* Header fijo */}
       <div style={{
         position: 'fixed',
@@ -12,21 +12,28 @@ function Login() {
         zIndex: 1000,
         background: '#0077cc',
         color: '#fff',
-        padding: '1rem 0.3rem',
+        padding: '0.5rem 0.3rem',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-start'
+        alignItems: 'center'
       }}>
-        <h1>BodegApp</h1>
-        <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9 }}>
-          Inventario simple y eficiente - para todo tipo de negocios
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+    <img 
+      src="/logo.svg" 
+      alt="Logo BodegaFeliz"
+      style={{ width: '25px', height: '25px', verticalAlign: 'middle' }}
+    />
+    <h1 style={{ margin: 0, fontSize: '1.15rem', lineHeight: '1' }}>BodegaFeliz</h1>
+  </div>
+        <p style={{ margin: 0, fontSize: '.8rem', opacity: 0.9 }}>
+          Inventario simple y eficiente
         </p>
       </div>
 
       {/* Panel de autenticación */}
       <div style={{ 
-            marginTop: '40px',
+            marginTop: '10px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',

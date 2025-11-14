@@ -84,7 +84,7 @@ function AuthPanel() {
 
   const inputStyle: React.CSSProperties = {
     padding: '10px',
-    border: '1px solid #ced4da',
+    border: '1px solid #e9e6e6ff',
     borderRadius: '8px',
     boxSizing: 'border-box',
     marginBottom: '10px',
@@ -112,6 +112,7 @@ function AuthPanel() {
   const switchButtonStyle: React.CSSProperties = {
     ...buttonStyle,
     backgroundColor: 'transparent',
+    fontSize: '13px',
     color: '#6c757d',
     border: '1px solid #6c757d',
     width: '100%',
@@ -125,14 +126,14 @@ function AuthPanel() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: '#ffffffff',
       }}
     >
       <form
         onSubmit={handleSubmit}
         style={{
           backgroundColor: 'white',
-          padding: '30px',
+          padding: '20px',
           borderRadius: '12px',
           boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
           width: '100%',

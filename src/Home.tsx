@@ -91,21 +91,23 @@ function Home({ userInfo }: Props) {
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         flexWrap: 'wrap'
     }}>
         {/* Columna izquierda: nombre y slogan */}
-        <div style={{ flex: '1 1 auto', minWidth: '160px' }}>
-            <img 
-        src="/logo.svg" 
-        alt="Logo BodegaFeliz"
-        style={{margin: 0, width: '23px', height: '23px' }}
+<div style={{ flex: '1 1 auto', minWidth: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+    <img 
+      src="/logo.svg" 
+      alt="Logo BodegaFeliz"
+      style={{ width: '25px', height: '25px', verticalAlign: 'middle' }}
     />
-            <h1 style={{ margin: 0, fontSize: '1.2rem' }}>BodegaFeliz</h1>
-            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
-                Inventario simple y eficiente
-            </p>
-        </div>
+    <h1 style={{ margin: 0, fontSize: '1.15rem', lineHeight: '1' }}>BodegaFeliz</h1>
+  </div>
+  <p style={{ margin: 0, fontSize: '0.70rem', opacity: 0.9 }}>
+    Inventario simple y eficiente
+  </p>
+</div>
 
         {/* Columna derecha: panel de usuario */}
         <div style={{
@@ -113,9 +115,9 @@ function Home({ userInfo }: Props) {
             flexDirection: 'column',
             alignItems: 'flex-end',
             textAlign: 'right',
-            fontSize: '0.68rem',
+            fontSize: '0.55rem',
             gap: '0.2rem',
-            marginTop: '0.4rem'
+            marginTop: '0.2rem'
         }}>
             <span style={{ fontWeight: 'bold' }}>Usuario:</span>
             <span>{userInfo.email}</span>
@@ -123,7 +125,7 @@ function Home({ userInfo }: Props) {
                 onClick={logout}
                 style={{
                     padding: '4px 8px',
-                    fontSize: '0.70rem',
+                    fontSize: '0.60rem',
                     backgroundColor: '#dc3545',
                     color: 'white',
                     border: 'none',
