@@ -99,7 +99,7 @@ function Home({ userInfo }: Props) {
             <img 
         src="/logo.svg" 
         alt="Logo BodegaFeliz"
-        style={{margin: '5px', width: '23px', height: '23px' }}
+        style={{margin: 0, width: '23px', height: '23px' }}
     />
             <h1 style={{ margin: 0, fontSize: '1.2rem' }}>BodegaFeliz</h1>
             <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
