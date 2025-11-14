@@ -99,7 +99,7 @@ function Home({ userInfo }: Props) {
             <img 
         src="/logo.svg" 
         alt="Logo BodegaFeliz"
-        style={{ width: '25px', height: '28px' }}
+        style={{ width: '23px', height: '23px' }}
     />
             <h1 style={{ margin: 0, fontSize: '1.15rem' }}>BodegaFeliz</h1>
             <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
@@ -147,7 +147,7 @@ function Home({ userInfo }: Props) {
                             onClick={() => togglePanel(btn.key)}
                             style={{
                                 height: '40px',
-                                fontSize: '105%',
+                                fontSize: '100%',
                                 backgroundColor: activePanel === btn.key ? '#007bff' : '#ffffff',
                                 color: activePanel === btn.key ? '#ffffff' : '#007bff',
                                 border: '2px solid #007bff',
