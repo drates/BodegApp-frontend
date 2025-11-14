@@ -113,7 +113,7 @@ function Home({ userInfo }: Props) {
             flexDirection: 'column',
             alignItems: 'flex-end',
             textAlign: 'right',
-            fontSize: '0.70rem',
+            fontSize: '0.68rem',
             gap: '0.2rem',
             marginTop: '0.4rem'
         }}>
@@ -122,8 +122,8 @@ function Home({ userInfo }: Props) {
             <button 
                 onClick={logout}
                 style={{
-                    padding: '4px 10px',
-                    fontSize: '0.75rem',
+                    padding: '4px 8px',
+                    fontSize: '0.70rem',
                     backgroundColor: '#dc3545',
                     color: 'white',
                     border: 'none',
@@ -137,7 +137,7 @@ function Home({ userInfo }: Props) {
     </div>
 
             {/* Contenido principal */}
-            <div style={{ padding: '10px', maxWidth: '1200px', margin: '100px auto 0 auto' }}>
+            <div style={{ padding: '10px', maxWidth: '1200px', margin: '80px auto 0 auto' }}>
                 <StockAlert lowStockItems={lowStockItems} />
 
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' }}>
