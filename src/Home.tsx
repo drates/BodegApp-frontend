@@ -97,7 +97,7 @@ function Home({ userInfo }: Props) {
         {/* Columna izquierda: nombre y slogan */}
         <div style={{ flex: '1 1 auto', minWidth: '160px' }}>
             <img 
-        src="/logo.png" 
+        src="/logo.svg" 
         alt="Logo BodegaFeliz"
         style={{ width: '20px', height: '20px' }}
     />
