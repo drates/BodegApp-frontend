@@ -87,7 +87,7 @@ function Home({ userInfo }: Props) {
         zIndex: 1000,
         background: '#0077cc',
         color: '#fff',
-        padding: '1rem 0.6rem',
+        padding: '0.7rem 0.5rem',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -99,7 +99,7 @@ function Home({ userInfo }: Props) {
             <img 
         src="/logo.svg" 
         alt="Logo BodegaFeliz"
-        style={{ width: '23px', height: '25px' }}
+        style={{ width: '25px', height: '28px' }}
     />
             <h1 style={{ margin: 0, fontSize: '1.3rem' }}>BodegaFeliz</h1>
             <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9 }}>
@@ -114,7 +114,7 @@ function Home({ userInfo }: Props) {
             alignItems: 'flex-end',
             textAlign: 'right',
             fontSize: '0.70rem',
-            gap: '0.3rem',
+            gap: '0.2rem',
             marginTop: '0.2rem'
         }}>
             <span style={{ fontWeight: 'bold' }}>Usuario:</span>

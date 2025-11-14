@@ -21,25 +21,25 @@ const StockAlert: React.FC<StockAlertProps> = ({ lowStockItems }) => {
             color: '#856404',
             border: '1px solid #ffeeba',
             borderRadius: '6px',
-            padding: '1rem',
-            marginBottom: '1.5rem',
+            padding: '0.5rem',
+            marginBottom: '1.0rem',
             boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
         }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <strong>⚠️ Alerta de stock bajo</strong>
+                <strong>⚠️ Alerta de stock</strong>
                 <button
                     onClick={toggleExpanded}
                     style={{
                         backgroundColor: '#856404',
                         color: '#fff',
                         border: 'none',
-                        padding: '0.3rem 0.6rem',
+                        padding: '0.2rem 0.4rem',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontSize: '0.8rem'
                     }}
                 >
-                    {isExpanded ? 'Ocultar' : 'Ver detalles'}
+                    {isExpanded ? 'Ocultar' : 'Detalles'}
                 </button>
             </div>
 
