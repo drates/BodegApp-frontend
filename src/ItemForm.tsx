@@ -73,12 +73,13 @@ function ItemForm({ onItemCreated }: Props) {
     };
 
     const formStyle: React.CSSProperties = {
-        padding: '20px',
+        padding: '10px',
         border: '1px solid #ddd',
         borderRadius: '8px',
         maxWidth: '600px',
-        margin: '20px auto',
-        backgroundColor: '#d4edda',
+        margin: '10px auto',
+        textAlign: 'left',
+        backgroundColor: '#fafcffff',
         boxShadow: '0 4px 8px rgba(0,0,0,0.05)'
     };
 
@@ -112,12 +113,17 @@ function ItemForm({ onItemCreated }: Props) {
     };
 
     return (
-        <div style={{ textAlign: 'center' }}>
+        <div>
             <form onSubmit={handleSubmit} style={formStyle}>
-                <h2 style={{ color: '#007bff', borderBottom: '2px solid #007bff', paddingBottom: '10px', marginBottom: '20px' }}>
-                    <span role="img" aria-label="icono-entrada" style={{ marginRight: '10px' }}>⬆️</span>
-                    Registrar Entrada
-                </h2>
+                <h2 style={{
+  color: '#007bff',
+  borderBottom: '2px solid #007bff',
+  paddingBottom: '10px',
+  marginBottom: '10px',
+  fontSize: '1.2rem' // 👈 achica la letra
+}}>
+  Registrar Entrada
+</h2>
 
                 {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando ingreso...</div>}
 

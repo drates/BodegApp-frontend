@@ -61,10 +61,10 @@ function Home({ userInfo }: Props) {
     }, []);
 
     const navButtons = [
-        { key: 'entrada', label: 'Registrar Entrada' },
-        { key: 'salida', label: 'Registrar Salida' },
-        { key: 'tabla', label: 'Ver Inventario' },
-        { key: 'movimientos', label: 'Movimientos recientes' }
+        { key: 'entrada', label: 'Entrada' },
+        { key: 'salida', label: 'Salida' },
+        { key: 'tabla', label: 'Inventario' },
+        { key: 'movimientos', label: 'Movimientos' }
     ];
 
     if (loadingUser) {
@@ -139,7 +139,7 @@ function Home({ userInfo }: Props) {
     </div>
 
             {/* Contenido principal */}
-            <div style={{ padding: '10px', maxWidth: '1200px', margin: '80px auto 0 auto' }}>
+            <div style={{ padding: '10px', maxWidth: '1200px', margin: '70px auto 0 auto' }}>
                 <StockAlert lowStockItems={lowStockItems} />
 
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' }}>
@@ -149,9 +149,9 @@ function Home({ userInfo }: Props) {
                             onClick={() => togglePanel(btn.key)}
                             style={{
                                 height: '40px',
-                                fontSize: '100%',
+                                fontSize: '95%',
                                 backgroundColor: activePanel === btn.key ? '#007bff' : '#ffffff',
-                                color: activePanel === btn.key ? '#ffffff' : '#007bff',
+                                color: activePanel === btn.key ? '#ffffff' : '#0357b0ff',
                                 border: '2px solid #007bff',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
