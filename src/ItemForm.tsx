@@ -73,13 +73,13 @@ function ItemForm({ onItemCreated }: Props) {
     };
 
     const formStyle: React.CSSProperties = {
-        padding: '10px',
+        padding: '20px',
         border: '1px solid #ddd',
         borderRadius: '8px',
         maxWidth: '600px',
         margin: '10px auto',
         textAlign: 'left',
-        backgroundColor: '#fafcffff',
+        backgroundColor: '#ffffffff',
         boxShadow: '0 4px 8px rgba(0,0,0,0.05)'
     };
 
@@ -92,12 +92,12 @@ function ItemForm({ onItemCreated }: Props) {
     const labelStyle: React.CSSProperties = {
         display: 'block',
         marginBottom: '0.25rem',
-        fontWeight: 'bold'
+        fontSize: '16px'
     };
 
     const inputElementStyle: React.CSSProperties = {
         width: '100%',
-        padding: '0.6rem',
+        padding: '0.3rem',
         borderRadius: '4px',
         border: '1px solid #ccc',
         boxSizing: 'border-box'
@@ -116,11 +116,12 @@ function ItemForm({ onItemCreated }: Props) {
         <div>
             <form onSubmit={handleSubmit} style={formStyle}>
                 <h2 style={{
-  color: '#007bff',
-  borderBottom: '2px solid #007bff',
+  color: '#0364cbff',
+  borderBottom: '1px solid #98a2acff',
   paddingBottom: '10px',
-  marginBottom: '10px',
-  fontSize: '1.2rem' // 👈 achica la letra
+  marginBottom: '20px',
+  marginTop: '0px',
+  fontSize: '1.35rem' // 👈 achica la letra
 }}>
   Registrar Entrada
 </h2>
