@@ -99,10 +99,10 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
     };
 
     return (
-        <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px' }}>
-            <h2 style={{ color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Historial de Movimientos de Stock</h2>
+        <div style={{ padding: '10px', backgroundColor: '#fff', borderRadius: '8px' }}>
+            <h2 style={{ color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Movimientos</h2>
 
-            <div style={{ marginBottom: '15px' }}>
+            <div style={{ marginBottom: '10px' }}>
                 <label htmlFor="productFilter" style={{ marginRight: '10px', fontWeight: 'bold' }}>Filtrar por Código:</label>
                 <input
                     id="productFilter"
@@ -120,7 +120,7 @@ function HistorialMovimientos({ productCode }: HistorialMovimientosProps) {
                         <th style={{ ...thStyle, width: '15%' }}>Fecha/Hora</th>
                         <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>Acción</th>
                         <th style={{ ...thStyle, width: '15%' }}>Código</th>
-                        <th style={{ ...thStyle, width: '25%' }}>Nombre Producto</th>
+                        <th style={{ ...thStyle, width: '20%' }}>Nombre Producto</th>
                         <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>U/Caja</th>
                         <th style={{ ...thStyle, width: '10%', textAlign: 'right' }}>Cajas +/-</th>
                         <th style={{ ...thStyle, width: '15%', textAlign: 'right' }}>Cajas Final</th>
