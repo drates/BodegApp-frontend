@@ -76,19 +76,19 @@ function ItemList() {
     }
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#007bff' }}>
+        <div style={{ padding: '0.1rem', marginTop: '-35px' }}>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '0.8rem', color: '#007bff' }}>
                 📦Inventario
             </h2>
 
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '0.2rem' }}>
                 <input
                     type="text"
                     placeholder="Buscar por código o nombre..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                     style={{
-                        width: '100%',
+                        width: '80%',
                         padding: '10px',
                         border: '1px solid #ccc',
                         borderRadius: '6px',
@@ -101,44 +101,28 @@ function ItemList() {
                 <table style={{
                     width: '100%',
                     borderCollapse: 'collapse',
-                    minWidth: '700px',
+                    minWidth: '290px',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                     borderRadius: '8px',
                     overflow: 'hidden'
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>Código</th>
-                            <th style={{ padding: '12px', textAlign: 'left' }}>Nombre</th>
-                            <th style={{ padding: '12px', textAlign: 'right' }}>Cajas</th>
-                            <th style={{ padding: '12px', textAlign: 'right' }}>Unidades/Caja</th>
-                            <th style={{ padding: '12px', textAlign: 'right' }}>Total Unidades</th>
-                            <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
+                            <th style={{ fontSize: '0.80rem', padding: '6px', textAlign: 'left' }}>Código</th>
+                            <th style={{ fontSize: '0.80rem', padding: '6px', textAlign: 'left' }}>Nombre</th>
+                            <th style={{ fontSize: '0.80rem', padding: '6px', textAlign: 'right' }}>Cajas</th>
+                            <th style={{ fontSize: '0.75rem', padding: '6px', textAlign: 'right' }}>Unidades por Caja</th>
+                            <th style={{ fontSize: '0.75rem', padding: '6px', textAlign: 'right' }}>Total Unidades</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredItems.map(item => (
                             <tr key={item.id} style={{ borderBottom: '1px solid #eee', backgroundColor: item.boxes === 0 ? '#ffdddd' : '#fff', transition: 'background-color 0.2s' }}>
-                                <td style={{ padding: '12px' }}>{item.productCode}</td>
-                                <td style={{ padding: '12px' }}>{item.name}</td>
-                                <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{item.boxes}</td>
-                                <td style={{ padding: '12px', textAlign: 'right' }}>{item.unitsPerBox}</td>
-                                <td style={{ padding: '12px', textAlign: 'right', color: item.totalUnits === 0 ? 'red' : 'inherit' }}>{item.totalUnits}</td>
-                                <td style={{ padding: '12px', textAlign: 'center' }}>
-                                    <button
-                                        onClick={() => handleEditClick(item)}
-                                        style={{
-                                            backgroundColor: '#ffc107',
-                                            color: '#333',
-                                            border: 'none',
-                                            padding: '6px 10px',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Editar
-                                    </button>
-                                </td>
+                                <td style={{ fontSize: '0.9rem', padding: '6px' }}>{item.productCode}</td>
+                                <td style={{ fontSize: '0.8rem', padding: '6px' }}>{item.name}</td>
+                                <td style={{ fontSize: '0.9rem', padding: '6px', textAlign: 'right', fontWeight: 'bold' }}>{item.boxes}</td>
+                                <td style={{ fontSize: '0.9rem', padding: '6px', textAlign: 'right' }}>{item.unitsPerBox}</td>
+                                <td style={{ fontSize: '0.9rem', padding: '6px', textAlign: 'right', color: item.totalUnits === 0 ? 'red' : 'inherit' }}>{item.totalUnits}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -166,9 +150,9 @@ function ItemList() {
                 }}>
                     <div style={{
                         backgroundColor: 'white',
-                        padding: '20px',
+                        padding: '10px',
                         borderRadius: '10px',
-                        maxWidth: '90%',
+                        maxWidth: '95%',
                         width: '500px',
                         boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)'
                     }}>
