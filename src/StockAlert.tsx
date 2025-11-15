@@ -18,10 +18,10 @@ const StockAlert: React.FC<StockAlertProps> = ({ lowStockItems }) => {
     return (
         <div style={{
             backgroundColor: '#fff3cd',
-            color: '#856404',
+            color: '#665b54ff',
             border: '1px solid #ffeeba',
             borderRadius: '6px',
-            padding: '0.5rem',
+            padding: '0.3rem',
             marginBottom: '1.0rem',
             boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
         }}>

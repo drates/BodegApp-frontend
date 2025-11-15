@@ -129,7 +129,7 @@ function ItemForm({ onItemCreated }: Props) {
                 {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando ingreso...</div>}
 
                 <div style={inputContainerStyle}>
-                    <label style={labelStyle}>Código de Producto:</label>
+                    <label style={labelStyle}>Código del Producto:</label>
                     <input
                         type="text"
                         placeholder="Ej: ART-001"
@@ -140,7 +140,7 @@ function ItemForm({ onItemCreated }: Props) {
                 </div>
 
                 <div style={inputContainerStyle}>
-                    <label style={labelStyle}>Nombre del Producto (solo productos nuevos):</label>
+                    <label style={labelStyle}>Nombre (solo productos nuevos):</label>
                     <input
                         type="text"
                         placeholder="Nombre descriptivo"
