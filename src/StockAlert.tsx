@@ -30,9 +30,9 @@ const StockAlert: React.FC<StockAlertProps> = ({ lowStockItems }) => {
                 <button
                     onClick={toggleExpanded}
                     style={{
-                        backgroundColor: '#856404',
-                        color: '#fff',
-                        border: 'none',
+                        backgroundColor: '#fff3cd',
+                        color: '#665b54ff',
+                        border: '1px solid #665b54ff',
                         padding: '0.2rem 0.4rem',
                         borderRadius: '4px',
                         cursor: 'pointer',

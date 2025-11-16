@@ -24,11 +24,7 @@ function HistorialMovimientos() {
     setLoading(true);
     setError('');
 
-    const endpoint = filtro.trim()
-      ? `/api/StockMovements?productCode=${filtro.trim()}`
-      : `/api/StockMovements`;
-
-    authFetch(endpoint, {
+    authFetch(`/api/StockMovements`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
     })
@@ -59,11 +55,26 @@ function HistorialMovimientos() {
       .finally(() => {
         setLoading(false);
       });
-  }, [filtro]);
+  }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFiltro(inputCode.trim().toLowerCase());
+    }, 1500);
+
+    return () => clearTimeout(handler);
+  }, [inputCode]);
 
   const formatDelta = (delta: number) => {
     return delta >= 0 ? `+${delta}` : `-${Math.abs(delta)}`;
   };
+
+  const movimientosFiltrados = filtro
+    ? movimientos.filter(m =>
+        m.productCode.toLowerCase().includes(filtro) ||
+        m.productName.toLowerCase().includes(filtro)
+      )
+    : movimientos;
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '50px' }}><Spinner /><p>Cargando historial de movimientos...</p></div>;
@@ -79,40 +90,47 @@ function HistorialMovimientos() {
         🔄️ Movimientos recientes
       </h2>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setFiltro(inputCode.trim());
-        }}
-        style={{ marginBottom: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}
-      >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        marginBottom: '10px',
+        maxWidth: '230px',
+        flexWrap: 'nowrap'
+      }}>
         <input
           type="text"
           value={inputCode}
           onChange={(e) => setInputCode(e.target.value)}
-          placeholder="Código de producto"
+          placeholder="Filtrar por Código o Nombre"
           style={{
-            padding: '8px',
+            flex: '1',
+            padding: '4px 6px',
+            fontSize: '0.75rem',
             borderRadius: '4px',
-            border: '1px solid #ccc',
-            flex: '1 1 100px',
-            minWidth: '100px'
+            border: '1px solid #ccc'
           }}
         />
-        <button
-          type="submit"
-          style={{
-            padding: '8px 12px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Buscar
-        </button>
-      </form>
+        {filtro && (
+          <button
+            type="button"
+            onClick={() => {
+              setFiltro('');
+              setInputCode('');
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007bff',
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              padding: 0
+            }}
+          >
+            Quitar filtro
+          </button>
+        )}
+      </div>
 
       <div style={{ overflowX: 'auto' }}>
         <table style={{
@@ -135,7 +153,7 @@ function HistorialMovimientos() {
             </tr>
           </thead>
           <tbody>
-            {movimientos.map((m, index) => {
+            {movimientosFiltrados.map((m, index) => {
               const isEven = index % 2 === 0;
               const isEntrada = m.delta >= 0;
               const accionTexto = isEntrada ? 'Entrada' : 'Salida';
@@ -162,7 +180,7 @@ function HistorialMovimientos() {
                   </td>
                   <td style={{ fontSize: '0.875rem', padding: '3px' }}>
                     <button
-                      onClick={() => setFiltro(m.productCode)}
+                      onClick={() => setInputCode(m.productCode)}
                       style={{
                         backgroundColor: 'transparent',
                         border: 'none',
@@ -192,9 +210,9 @@ function HistorialMovimientos() {
         </table>
       </div>
 
-      {movimientos.length === 0 && (
+      {movimientosFiltrados.length === 0 && (
         <div style={{ marginTop: '20px', textAlign: 'center', color: '#6c757d' }}>
-          No se encontraron movimientos para {filtro ? `el código ${filtro}` : 'mostrar'}.
+          No se encontraron resultados.
         </div>
       )}
     </div>
