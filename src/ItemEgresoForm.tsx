@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authFetch } from './utils/authFetch';
+import Spinner from './Spinner';
 
 type Props = {
     onItemUpdated: () => void;
@@ -10,6 +11,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
     const [unitsPerBox, setUnitsPerBox] = useState(0);
     const [boxesToRemove, setBoxesToRemove] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,6 +32,8 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
             boxes: boxesToRemove,
             unitsPerBox
         };
+
+        setIsLoading(true);
 
         try {
             const response = await authFetch('/api/egreso', {
@@ -54,84 +58,120 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
         } catch (error) {
             console.error("Fallo de red o del servidor:", error);
             setErrorMessage("Error de conexión con el servidor. Intente de nuevo.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    const formStyle: React.CSSProperties = {
+        padding: '20px',
+        border: '1px solid #ddd',
+        borderRadius: '8px',
+        maxWidth: '600px',
+        margin: '10px auto',
+        textAlign: 'left',
+        backgroundColor: '#ffffffff',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.05)'
+    };
+
+    const inputContainerStyle: React.CSSProperties = {
+        marginBottom: '1rem',
+        display: 'flex',
+        flexDirection: 'column'
+    };
+
+    const labelStyle: React.CSSProperties = {
+        display: 'block',
+        marginBottom: '0.25rem',
+        fontSize: '16px'
+    };
+
+    const inputElementStyle: React.CSSProperties = {
+        width: '100%',
+        padding: '0.3rem',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        boxSizing: 'border-box'
+    };
+
+    const submitButtonStyle: React.CSSProperties = {
+        padding: '0.6rem 1.2rem',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: isLoading ? 'not-allowed' : 'pointer'
+    };
+
     return (
-        <form onSubmit={handleSubmit} style={{
-            maxWidth: '600px',
-            margin: '0 auto',
-            padding: '2rem',
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-            borderLeft: '5px solid #dc3545'
-        }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#dc3545' }}>
-                Registro de Salida (Egreso)
-            </h2>
-            <p style={{ marginBottom: '1rem', color: '#6c757d' }}>Retirar stock de un producto existente.</p>
+        <div>
+            <form onSubmit={handleSubmit} style={formStyle}>
+                <h2 style={{
+                    color: '#007bff',
+                    borderBottom: '1px solid #cbced0ff',
+                    paddingBottom: '10px',
+                    marginBottom: '20px',
+                    marginTop: '0px',
+                    fontSize: '1.35rem'
+                }}>
+                    Registrar Salida
+                </h2>
 
-            <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem' }}>Código del Producto:</label>
-                <input
-                    type="text"
-                    placeholder="Código (ej: A001)"
-                    value={productCode}
-                    onChange={e => setProductCode(e.target.value)}
-                    required
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                />
-            </div>
+                {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando salida...</div>}
 
-            <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem' }}>Unidades por Caja:</label>
-                <input
-                    type="number"
-                    placeholder="Unidades"
-                    value={unitsPerBox}
-                    onChange={e => setUnitsPerBox(Number(e.target.value))}
-                    required
-                    min="1"
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                />
-            </div>
+                <div style={inputContainerStyle}>
+                    <label style={labelStyle}>Código del Producto:</label>
+                    <input
+                        type="text"
+                        placeholder="Ej: ART-001"
+                        value={productCode}
+                        onChange={e => setProductCode(e.target.value)}
+                        style={inputElementStyle}
+                    />
+                </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem' }}>Cajas a retirar:</label>
-                <input
-                    type="number"
-                    placeholder="Cantidad de cajas"
-                    value={boxesToRemove}
-                    onChange={e => setBoxesToRemove(Number(e.target.value))}
-                    required
-                    min="1"
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                />
-            </div>
+                <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={{ ...inputContainerStyle, flex: 1 }}>
+                        <label style={labelStyle}>Unidades por caja:</label>
+                        <input
+                            type="number"
+                            placeholder="Unidades"
+                            value={unitsPerBox}
+                            onChange={e => setUnitsPerBox(Number(e.target.value))}
+                            min="1"
+                            style={inputElementStyle}
+                        />
+                    </div>
 
-            <button
-                type="submit"
-                style={{
-                    padding: '0.6rem 1.2rem',
-                    backgroundColor: '#dc3545',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    width: '100%',
-                    fontWeight: 'bold'
-                }}
-            >
-                Registrar Salida del Inventario
-            </button>
+                    <div style={{ ...inputContainerStyle, flex: 1 }}>
+                        <label style={labelStyle}>Cajas a retirar:</label>
+                        <input
+                            type="number"
+                            placeholder="Cantidad de cajas"
+                            value={boxesToRemove}
+                            onChange={e => setBoxesToRemove(Number(e.target.value))}
+                            min="1"
+                            style={inputElementStyle}
+                        />
+                    </div>
+                </div>
 
-            {errorMessage && (
-                <p style={{ color: errorMessage.startsWith('✅') ? 'green' : 'red', marginTop: '1rem', textAlign: 'center' }}>
-                    {errorMessage}
-                </p>
-            )}
-        </form>
+                <button type="submit" disabled={isLoading} style={submitButtonStyle}>
+                    {isLoading ? 'Procesando...' : 'Registrar Salida del Inventario'}
+                </button>
+
+                {errorMessage && (
+                    <p style={{
+                        color: errorMessage.startsWith('✅') ? 'green' : 'red',
+                        marginTop: '1rem',
+                        fontWeight: 'bold',
+                        textAlign: 'center'
+                    }}>
+                        {errorMessage}
+                    </p>
+                )}
+            </form>
+        </div>
     );
 }
 

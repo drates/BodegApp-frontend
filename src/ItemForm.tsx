@@ -116,15 +116,15 @@ function ItemForm({ onItemCreated }: Props) {
         <div>
             <form onSubmit={handleSubmit} style={formStyle}>
                 <h2 style={{
-  color: '#0364cbff',
-  borderBottom: '1px solid #98a2acff',
-  paddingBottom: '10px',
-  marginBottom: '20px',
-  marginTop: '0px',
-  fontSize: '1.35rem' // 👈 achica la letra
-}}>
-  Registrar Entrada
-</h2>
+                color: '#007bff',
+                borderBottom: '1px solid #cbced0ff',
+                paddingBottom: '10px',
+                marginBottom: '20px',
+                marginTop: '0px',
+                fontSize: '1.35rem' // 👈 achica la letra
+                }}>
+                Registrar Entrada
+                </h2>
 
                 {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando ingreso...</div>}
 

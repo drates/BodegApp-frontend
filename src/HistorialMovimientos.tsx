@@ -61,10 +61,8 @@ function HistorialMovimientos() {
       });
   }, [filtro]);
 
-  const formatDelta = (delta: number, action: string) => {
-    if (action === 'Ingreso') return `+${delta}`;
-    if (action === 'Egreso') return `-${Math.abs(delta)}`;
-    return delta.toString();
+  const formatDelta = (delta: number) => {
+    return delta >= 0 ? `+${delta}` : `-${Math.abs(delta)}`;
   };
 
   if (loading) {
@@ -139,8 +137,9 @@ function HistorialMovimientos() {
           <tbody>
             {movimientos.map((m, index) => {
               const isEven = index % 2 === 0;
-              const deltaValue = formatDelta(m.delta, m.action);
-              const isIngreso = m.action === 'Ingreso';
+              const isEntrada = m.delta >= 0;
+              const accionTexto = isEntrada ? 'Entrada' : 'Salida';
+              const movimientoTexto = formatDelta(m.delta);
 
               return (
                 <tr key={`${m.timestamp}-${m.productCode}-${index}`} style={{
@@ -152,13 +151,13 @@ function HistorialMovimientos() {
                   </td>
                   <td style={{ fontSize: '0.8rem', padding: '3px', textAlign: 'center' }}>
                     <span style={{
-                      backgroundColor: isIngreso ? '#cce5ff' : '#114f92',
-                      color: isIngreso ? '#000' : '#fff',
+                      backgroundColor: isEntrada ? '#cce5ff' : '#114f92',
+                      color: isEntrada ? '#000' : '#fff',
                       padding: '2px 6px',
                       borderRadius: '4px',
                       fontWeight: 'bold'
                     }}>
-                      {m.action}
+                      {accionTexto}
                     </span>
                   </td>
                   <td style={{ fontSize: '0.875rem', padding: '3px' }}>
@@ -181,7 +180,7 @@ function HistorialMovimientos() {
                   <td style={{ fontSize: '0.8rem', padding: '3px' }}>{m.productName}</td>
                   <td style={{ fontSize: '0.8rem', padding: '3px', textAlign: 'center' }}>{m.unitsPerBox}</td>
                   <td style={{ fontSize: '0.85rem', padding: '10px', textAlign: 'right', fontWeight: 'bold' }}>
-                    {deltaValue} Caja(s)
+                    {movimientoTexto} Caja(s)
                   </td>
                   <td style={{ fontSize: '0.85rem', padding: '10px', textAlign: 'right', fontWeight: 'bold' }}>
                     {m.boxesAfterChange} Caja(s)

@@ -63,7 +63,7 @@ function Home({ userInfo }: Props) {
     const navButtons = [
         { key: 'entrada', label: 'Entrada' },
         { key: 'salida', label: 'Salida' },
-        { key: 'tabla', label: 'Inventario' },
+        { key: 'tabla', label: 'Ver Inventario' },
         { key: 'movimientos', label: 'Movimientos' }
     ];
 
@@ -87,7 +87,7 @@ function Home({ userInfo }: Props) {
         zIndex: 1000,
         background: '#0077cc',
         color: '#fff',
-        padding: '0.5rem 0.4rem',
+        padding: '0.5rem 0.6rem',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -130,6 +130,8 @@ function Home({ userInfo }: Props) {
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
+                    alignSelf: 'flex-end',
+                    marginRight: '-0.2rem',
                     cursor: 'pointer'
                 }}
             >
@@ -142,18 +144,19 @@ function Home({ userInfo }: Props) {
             <div style={{ padding: '10px', maxWidth: '1200px', margin: '70px auto 0 auto' }}>
                 <StockAlert lowStockItems={lowStockItems} />
 
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
                     {navButtons.map(btn => (
                         <button
                             key={btn.key}
                             onClick={() => togglePanel(btn.key)}
                             style={{
                                 height: '40px',
-                                fontSize: '95%',
+                                width: '120px',
+                                fontSize: '90%',
                                 backgroundColor: activePanel === btn.key ? '#007bff' : '#ffffff',
                                 color: activePanel === btn.key ? '#ffffff' : '#0357b0ff',
-                                border: '2px solid #007bff',
-                                borderRadius: '6px',
+                                border: '3px solid #0357b0ff',
+                                borderRadius: '3px',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease'
                             }}

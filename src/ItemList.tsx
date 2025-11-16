@@ -72,7 +72,7 @@ function ItemList() {
   return (
     <div style={{ padding: '0.1rem', marginTop: '-35px' }}>
       <h2 style={{ fontSize: '1.35rem', fontWeight: 'bold', marginBottom: '0.8rem', color: '#007bff' }}>
-        📦Inventario
+        📦 Inventario
       </h2>
 
       <div style={{ overflowX: 'auto' }}>
@@ -85,7 +85,7 @@ function ItemList() {
           overflow: 'hidden'
         }}>
           <thead>
-            <tr style={{ backgroundColor: '#114f92ff', color: 'white' }}>
+            <tr style={{ backgroundColor: '#114f92ff', color: 'white', height: '40px' }}>
               <th
                 style={{ fontSize: '0.8rem', padding: '6px', textAlign: 'left', cursor: 'pointer' }}
                 onClick={() => handleSort('productCode')}
@@ -100,7 +100,7 @@ function ItemList() {
               </th>
               <th style={{ fontSize: '0.8rem', padding: '3px', textAlign: 'right' }}>Cajas</th>
               <th style={{ fontSize: '0.75rem', padding: '3px', textAlign: 'right' }}>U/Caja</th>
-              <th style={{ fontSize: '0.73rem', padding: '3px', textAlign: 'right' }}>Unidades</th>
+              <th style={{ fontSize: '0.73rem', padding: '6px', textAlign: 'right' }}>Unidades</th>
             </tr>
           </thead>
           <tbody>
@@ -108,13 +108,14 @@ function ItemList() {
               <tr key={item.id} style={{
                 borderBottom: '1px solid #eee',
                 backgroundColor: item.boxes === 0 ? '#ffdddd' : '#fff',
+                height: '35px',
                 transition: 'background-color 0.2s'
               }}>
                 <td style={{ fontSize: '0.9rem', padding: '3px' }}>{item.productCode}</td>
                 <td style={{ fontSize: '0.8rem', padding: '3px' }}>{item.name}</td>
                 <td style={{ fontSize: '0.9rem', padding: '3px', textAlign: 'right', fontWeight: 'bold' }}>{item.boxes}</td>
                 <td style={{ fontSize: '0.9rem', padding: '3px', textAlign: 'right' }}>{item.unitsPerBox}</td>
-                <td style={{ fontSize: '0.9rem', padding: '3px', textAlign: 'right', color: item.totalUnits === 0 ? 'red' : 'inherit' }}>{item.totalUnits}</td>
+                <td style={{ fontSize: '0.9rem', padding: '6px', textAlign: 'right', color: item.totalUnits === 0 ? 'red' : 'inherit' }}>{item.totalUnits}</td>
               </tr>
             ))}
           </tbody>
