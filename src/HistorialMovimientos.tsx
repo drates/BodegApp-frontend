@@ -94,7 +94,7 @@ function HistorialMovimientos() {
         display: 'flex',
         alignItems: 'center',
         gap: '6px',
-        marginBottom: '10px',
+        //marginBottom: '10px',
         maxWidth: '230px',
         flexWrap: 'nowrap'
       }}>
@@ -149,7 +149,7 @@ function HistorialMovimientos() {
               <th style={{ fontSize: '0.8rem', padding: '3px', textAlign: 'left' }}>Producto</th>
               <th style={{ fontSize: '0.75rem', padding: '3px', textAlign: 'center' }}>U/Caja</th>
               <th style={{ fontSize: '0.75rem', padding: '10px', textAlign: 'center' }}>Movimiento</th>
-              <th style={{ fontSize: '0.75rem', padding: '10px', textAlign: 'center' }}>Stock resultante</th>
+              <th style={{ fontSize: '0.75rem', padding: '15px', textAlign: 'center' }}>Stock resultante</th>
             </tr>
           </thead>
           <tbody>
@@ -200,7 +200,7 @@ function HistorialMovimientos() {
                   <td style={{ fontSize: '0.85rem', padding: '10px', textAlign: 'right', fontWeight: 'bold' }}>
                     {movimientoTexto} Caja(s)
                   </td>
-                  <td style={{ fontSize: '0.85rem', padding: '10px', textAlign: 'right', fontWeight: 'bold' }}>
+                  <td style={{ fontSize: '0.85rem', padding: '15px', textAlign: 'right', fontWeight: 'bold' }}>
                     {m.boxesAfterChange} Caja(s)
                   </td>
                 </tr>

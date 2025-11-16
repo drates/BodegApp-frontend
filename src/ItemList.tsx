@@ -96,7 +96,7 @@ function ItemList() {
         display: 'flex',
         alignItems: 'center',
         gap: '6px',
-        marginBottom: '10px',
+        //marginBottom: '10px',
         maxWidth: '230px',
         flexWrap: 'nowrap'
       }}>
@@ -144,7 +144,7 @@ function ItemList() {
           overflow: 'hidden'
         }}>
           <thead>
-            <tr style={{ backgroundColor: '#114f92ff', color: 'white', height: '40px' }}>
+            <tr style={{ backgroundColor: '#114f92ff', color: 'white', height: '50px' }}>
               <th
                 style={{ fontSize: '0.8rem', padding: '6px', textAlign: 'left', cursor: 'pointer' }}
                 onClick={() => handleSort('productCode')}
