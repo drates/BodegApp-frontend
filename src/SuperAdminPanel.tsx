@@ -37,7 +37,7 @@ function SuperAdminPanel({ userInfo }: Props) {
             setLoading(true);
             setError(null);
             try {
-                const response = await authFetch("/superadmin/metricas", {
+                const response = await authFetch("/api/superadmin/metricas", {
                     method: 'GET'
                 });
 
