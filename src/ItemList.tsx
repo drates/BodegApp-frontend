@@ -88,8 +88,8 @@ function ItemList() {
 
   return (
     <div style={{ padding: '0.1rem', marginTop: '-35px' }}>
-      <h2 style={{ fontSize: '1.35rem', fontWeight: 'bold', marginBottom: '0.8rem', color: '#007bff' }}>
-        📦 Inventario
+      <h2 style={{ fontSize: '1.35rem', fontWeight: 'bold', marginBottom: '0.8rem', color: '#0077cc' }}>
+        📦Inventario
       </h2>
 
       <div style={{
@@ -144,7 +144,7 @@ function ItemList() {
           overflow: 'hidden'
         }}>
           <thead>
-            <tr style={{ backgroundColor: '#114f92ff', color: 'white', height: '50px' }}>
+            <tr style={{ backgroundColor: '#114f92ff', color: 'white', height: '55px' }}>
               <th
                 style={{ fontSize: '0.8rem', padding: '6px', textAlign: 'left', cursor: 'pointer' }}
                 onClick={() => handleSort('productCode')}

@@ -105,8 +105,9 @@ function ItemForm({ onItemCreated }: Props) {
 
     const submitButtonStyle: React.CSSProperties = {
         padding: '0.6rem 1.2rem',
-        backgroundColor: '#007bff',
+        backgroundColor: '#0077cc',
         color: '#fff',
+        fontSize: '0.85',
         border: 'none',
         borderRadius: '4px',
         cursor: isLoading ? 'not-allowed' : 'pointer'
@@ -116,7 +117,7 @@ function ItemForm({ onItemCreated }: Props) {
         <div>
             <form onSubmit={handleSubmit} style={formStyle}>
                 <h2 style={{
-                color: '#007bff',
+                color: '#0077cc',
                 borderBottom: '1px solid #cbced0ff',
                 paddingBottom: '10px',
                 marginBottom: '20px',

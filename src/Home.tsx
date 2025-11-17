@@ -126,7 +126,7 @@ function Home({ userInfo }: Props) {
                 style={{
                     padding: '4px 8px',
                     fontSize: '0.60rem',
-                    backgroundColor: '#dc3545',
+                    backgroundColor: '#7b0a16ff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
@@ -153,9 +153,9 @@ function Home({ userInfo }: Props) {
                                 height: '40px',
                                 width: '120px',
                                 fontSize: '90%',
-                                backgroundColor: activePanel === btn.key ? '#007bff' : '#ffffff',
-                                color: activePanel === btn.key ? '#ffffff' : '#0357b0ff',
-                                border: '3px solid #0357b0ff',
+                                backgroundColor: activePanel === btn.key ? '#0077cc' : '#ffffff',
+                                color: activePanel === btn.key ? '#ffffff' : '#0077cc',
+                                border: '3px solid #0077cc',
                                 borderRadius: '3px',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease'
