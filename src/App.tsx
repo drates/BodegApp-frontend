@@ -49,7 +49,7 @@ const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   }
 
   if (!userInfo) return <Login />;
-  if (userInfo.role === 'SuperAdmin') return <SuperAdminPanel userInfo={userInfo} />;
+  if (userInfo.role === 'Superadmin') return <SuperAdminPanel userInfo={userInfo} />;
   return <Home userInfo={userInfo} />;
 }
 

@@ -6,7 +6,7 @@ import { API_BASE_URL } from './config';
  * @param options Opciones estándar de fetch
  * @returns Promesa que resuelve en el objeto Response de fetch
  */
-export const authFetch = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
+export const authFetch = async (endpoint: string, options: RequestInit = {}, skipAuthCheck: boolean = false): Promise<Response> => {
     const token = localStorage.getItem('token');
 
     // Normaliza la base para evitar doble slash
@@ -42,10 +42,10 @@ export const authFetch = async (endpoint: string, options: RequestInit = {}): Pr
 
         console.log(`[authFetch] ← ${response.status} ${response.statusText}`);
 
-        if (response.status === 401) {
+        if (!skipAuthCheck && response.status === 401) {
             console.warn('[authFetch] Token inválido. Redirigiendo al login...');
             localStorage.removeItem('token');
-            window.location.href = '/';
+            //window.location.href = '/';
             throw new Error('Sesión expirada');
         }
 

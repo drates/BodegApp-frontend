@@ -2,15 +2,16 @@ import { useState } from 'react';
 import { authFetch } from './utils/authFetch';
 import Spinner from './Spinner';
 
+// 🚨 DEFINICIÓN CRÍTICA DE TIPOS: Asegura que onItemCreated sea una función sin argumentos.
 type Props = {
     onItemCreated: () => void;
 };
 
-// Simulación temporal: en producción podrías consultar el backend o usar una lista local
-const isNewProductCode = (code: string): boolean => {
-    // Por ahora, asumimos que cualquier código que empiece con "sku" ya existe
-    return !code.toLowerCase().startsWith('sku');
-};
+// ❌ Lógica de simulación ELIMINADA: Ya no es necesaria, el backend lo maneja.
+// const isNewProductCode = (code: string): boolean => {
+//     // Por ahora, asumimos que cualquier código que empiece con "sku" ya existe
+//     return !code.toLowerCase().startsWith('sku');
+// };
 
 function ItemForm({ onItemCreated }: Props) {
     const [productCode, setProductCode] = useState('');
@@ -29,11 +30,12 @@ function ItemForm({ onItemCreated }: Props) {
             return;
         }
 
-        if (!name.trim() && isNewProductCode(productCode)) {
-            setErrorMessage("Debes ingresar un nombre para productos nuevos.");
-            return;
-        }
-
+        // ❌ VALIDACIÓN DE NOMBRE ELIMINADA: Se delega al backend.
+        // if (!name.trim() && isNewProductCode(productCode)) {
+        //     setErrorMessage("Debes ingresar un nombre para productos nuevos.");
+        //     return;
+        // }
+        
         if (boxes <= 0 || unitsPerBox <= 0) {
             setErrorMessage("Las cajas y las unidades por caja deben ser mayores a cero.");
             return;
@@ -41,7 +43,8 @@ function ItemForm({ onItemCreated }: Props) {
 
         const newItem = {
             productCode,
-            name,
+            // Envía el nombre, aunque esté vacío. El backend decide si es obligatorio.
+            name, 
             boxes,
             unitsPerBox
         };
@@ -62,7 +65,18 @@ function ItemForm({ onItemCreated }: Props) {
                 setUnitsPerBox(0);
                 onItemCreated();
             } else {
-                setErrorMessage("Error desconocido al registrar el ingreso.");
+                // ✅ CAMBIO CLAVE: Manejo de errores 400 del backend
+                if (response.status === 400) {
+                    const errorData = await response.json();
+                    if (errorData.message) {
+                        // Captura el mensaje específico del backend: "El producto es nuevo y requiere un nombre."
+                        setErrorMessage(errorData.message); 
+                    } else {
+                        setErrorMessage("Error de validación de la solicitud.");
+                    }
+                } else {
+                    setErrorMessage("Error desconocido al registrar el ingreso.");
+                }
             }
 
         } catch (error: any) {
@@ -122,7 +136,7 @@ function ItemForm({ onItemCreated }: Props) {
                 paddingBottom: '10px',
                 marginBottom: '20px',
                 marginTop: '0px',
-                fontSize: '1.35rem' // 👈 achica la letra
+                fontSize: '1.35rem' 
                 }}>
                 Registrar Entrada
                 </h2>

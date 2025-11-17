@@ -24,7 +24,7 @@ function SuperAdminPanel({ userInfo }: Props) {
     const [error, setError] = useState<string | null>(null);
 
     // Si el usuario no es SuperAdmin, redirigir o mostrar un mensaje
-    if (userInfo.role !== 'SuperAdmin') {
+    if (userInfo.role !== 'Superadmin') {
         return (
             <div className="p-6 text-center text-red-600 font-bold">
                 Acceso Denegado. Se requiere rol de Super Administrador.

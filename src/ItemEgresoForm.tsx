@@ -108,7 +108,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
         <div>
             <form onSubmit={handleSubmit} style={formStyle}>
                 <h2 style={{
-                    color: '#0077cc',
+                    color: '#007bff',
                     borderBottom: '1px solid #cbced0ff',
                     paddingBottom: '10px',
                     marginBottom: '20px',

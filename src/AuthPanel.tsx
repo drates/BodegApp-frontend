@@ -6,20 +6,74 @@ const REGISTER_ENDPOINT = '/api/auth/register';
 
 function AuthPanel() {
   const login = async (email: string, password: string) => {
+    // 🛑 CAMBIO CRÍTICO: Añadimos 'true' al final para indicar a authFetch que omita el chequeo de 401
     const res = await authFetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
+    }, true); // <--- ¡Esto permite que el 401 pase al bloque if (!res.ok)!
+
+    if (!res.ok) {
+      // Bloque de manejo de errores robusto (mantenido)
+      let errorMessage = 'Error desconocido al intentar hacer sesión.';
+      
+      try {
+          // Intentamos leer el cuerpo de la respuesta como texto.
+          const errorBody = await res.text();
+          
+          if (errorBody) {
+              try {
+                  // Si hay un cuerpo, intentamos parsearlo como JSON para buscar la clave 'message'
+                  const errData = JSON.parse(errorBody);
+                  // Usamos el mensaje del backend o el cuerpo completo si JSON falla
+                  errorMessage = errData.message || errorBody;
+              } catch {
+                  // Si el parseo JSON falla (es texto plano o HTML), usamos el texto completo.
+                  errorMessage = errorBody; 
+              }
+          } else {
+              // Si no hay cuerpo, usamos el texto de estado HTTP (Ej: 401 Unauthorized)
+              errorMessage = `Error ${res.status} (${res.statusText || 'Error del servidor'}).`;
+          }
+      } catch {
+          // Fallo de lectura del stream de respuesta (muy raro)
+          errorMessage = 'Fallo al procesar la respuesta del servidor.';
+      }
+
+      // Lanzamos el error capturado
+      throw new Error(errorMessage);
+    }
+
+    // Código de éxito
+    const { token } = await res.json();
+    localStorage.setItem('token', token);
+    window.location.href = '/home';
+  };
+
+  const register = async (
+    email: string,
+    password: string,
+    nombreEmpresa: string,
+    tipoNegocio: string,
+    otroNegocio: string
+  ) => {
+    const res = await authFetch(REGISTER_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
+        nombreEmpresa,
+        tipoNegocio: tipoNegocio === 'Otro' ? otroNegocio : tipoNegocio,
+      }),
     });
 
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.message || 'Credenciales inválidas');
+      throw new Error(err.message || 'Error al crear la cuenta. Intente de nuevo.');
     }
 
-    const { token } = await res.json();
-    localStorage.setItem('token', token);
-    window.location.href = '/home';
+    return 'Registro exitoso. ¡Inicia sesión!';
   };
 
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -36,121 +90,88 @@ function AuthPanel() {
     setError('');
     setIsLoading(true);
 
-    if (!isLoginMode) {
-      if (!nombreEmpresa || !tipoNegocio || (tipoNegocio === 'Otro' && !otroNegocio)) {
-        setError('Por favor, complete todos los campos de registro.');
-        setIsLoading(false);
-        return;
-      }
-
-      const registrationData = {
-        email,
-        password,
-        companyName: nombreEmpresa,
-        businessType: tipoNegocio === 'Otro' ? otroNegocio : tipoNegocio,
-      };
-
-      try {
-        const response = await authFetch(REGISTER_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(registrationData),
-        });
-
-        if (response.ok) {
-          setError('✅ Registro exitoso. Iniciando sesión...');
-          await login(email, password);
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Error desconocido durante el registro.');
-        }
-      } catch (err: any) {
-        setError(err.message || 'Hubo un error al registrar la cuenta.');
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      try {
+    try {
+      if (isLoginMode) {
         await login(email, password);
-      } catch (err: any) {
-        setError(err.message || 'Error de inicio de sesión. Verifique sus credenciales.');
-      } finally {
-        setIsLoading(false);
+      } else {
+        const resultMessage = await register(
+          email,
+          password,
+          nombreEmpresa,
+          tipoNegocio,
+          otroNegocio
+        );
+        setError(resultMessage);
+        setIsLoginMode(true); 
       }
+    } catch (err: any) {
+      // Captura el error lanzado por login/register (que ya es específico)
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const businessTypes = ['Retail', 'Distribución', 'Manufactura', 'Servicios', 'Otro'];
-
-  const inputStyle: React.CSSProperties = {
-    padding: '10px',
-    border: '1px solid #e9e6e6ff',
-    borderRadius: '8px',
-    boxSizing: 'border-box',
-    marginBottom: '10px',
-    width: '100%',
+  const formStyle: React.CSSProperties = {
+    padding: '25px',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    maxWidth: '450px',
+    margin: '30px auto',
+    backgroundColor: '#fff',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
   };
 
-  const buttonStyle: React.CSSProperties = {
-    padding: '10px 15px',
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px',
+    marginBottom: '15px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    boxSizing: 'border-box',
+    fontSize: '16px',
+  };
+
+  const submitButtonStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: '#0077cc',
+    color: '#fff',
     border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
+    borderRadius: '5px',
+    cursor: isLoading ? 'not-allowed' : 'pointer',
     fontSize: '16px',
     fontWeight: 'bold',
     transition: 'background-color 0.3s',
   };
 
-  const submitButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: isLoginMode ? '#007bff' : '#28a745',
-    color: 'white',
+  const switchButtonStyle: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    color: '#0077cc',
+    cursor: isLoading ? 'not-allowed' : 'pointer',
+    fontSize: '14px',
+    marginTop: '15px',
     width: '100%',
-    marginBottom: '10px',
+    textAlign: 'center',
   };
 
-  const switchButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: 'transparent',
-    fontSize: '13px',
-    color: '#6c757d',
-    border: '1px solid #6c757d',
-    width: '100%',
-    marginTop: '10px',
-  };
+  const tipoNegocioOptions = [
+    'Retail/Tienda',
+    'Manufactura',
+    'Distribución/Mayorista',
+    'Servicios',
+    'Otro',
+  ];
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#ffffffff',
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '12px',
-          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-          width: '100%',
-          maxWidth: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#343a40' }}>
+    <div className="auth-panel" style={{ textAlign: 'center' }}>
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <h2 style={{ color: '#0077cc', marginBottom: '20px' }}>
           {isLoginMode ? 'Iniciar Sesión' : 'Crear Cuenta'}
         </h2>
 
-        {isLoading && (
-          <div style={{ textAlign: 'center', margin: '15px 0' }}>
-            <Spinner />
-          </div>
-        )}
+        {isLoading && <Spinner />}
 
         <input
           type="email"
@@ -161,6 +182,7 @@ function AuthPanel() {
           style={inputStyle}
           disabled={isLoading}
         />
+
         <input
           type="password"
           placeholder="Contraseña"
@@ -182,18 +204,18 @@ function AuthPanel() {
               style={inputStyle}
               disabled={isLoading}
             />
+
             <select
               value={tipoNegocio}
-              onChange={(e) => {
-                setTipoNegocio(e.target.value);
-                if (e.target.value !== 'Otro') setOtroNegocio('');
-              }}
+              onChange={(e) => setTipoNegocio(e.target.value)}
               required
               style={inputStyle}
               disabled={isLoading}
             >
-              <option value="">Seleccione Tipo de Negocio</option>
-              {businessTypes.map((type) => (
+              <option value="" disabled>
+                Selecciona Tipo de Negocio
+              </option>
+              {tipoNegocioOptions.map((type) => (
                 <option key={type} value={type}>
                   {type}
                 </option>
