@@ -5,7 +5,7 @@ import SuperAdminPanel from './SuperAdminPanel';
 import Spinner from './Spinner';
 import { authFetch } from './utils/authFetch';
 // 💡 IMPORTAR EL NUEVO COMPONENTE LANDING
-import Landing from './landing'; 
+import Landing from './Landing'; 
 
 function App() {
   const [loading, setLoading] = useState(true);
