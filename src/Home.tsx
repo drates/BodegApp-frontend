@@ -22,6 +22,8 @@ function Home({ userInfo }: Props) {
     const [lowStockItems, setLowStockItems] = useState<
         { productCode: string; productName: string; boxes: number }[]
     >([]);
+    // 🟢 NUEVO ESTADO: Para la notificación de éxito
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const togglePanel = (panelName: string | null) => {
         setActivePanel(prev => (prev === panelName ? null : panelName));
@@ -31,6 +33,12 @@ function Home({ userInfo }: Props) {
         setReloadFlag(prev => prev + 1);
         setActivePanel(null);
         checkLowStock();
+    };
+
+    // 🟢 NUEVA FUNCIÓN: Muestra el mensaje de éxito y luego recarga. Reemplaza a handleReload en los formularios.
+    const handleSuccess = () => {
+        setSuccessMessage("Movimiento registrado con éxito.");
+        handleReload();
     };
 
     const logout = () => {
@@ -59,6 +67,16 @@ function Home({ userInfo }: Props) {
         setLoadingUser(false);
         checkLowStock();
     }, []);
+
+    // 🟢 NUEVO useEffect: Para ocultar el mensaje después de 7 segundos
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+            }, 7000); // 7000 milisegundos = 7 segundos
+            return () => clearTimeout(timer); // Limpieza del temporizador
+        }
+    }, [successMessage]);
 
     const navButtons = [
         { key: 'entrada', label: 'Entrada' },
@@ -142,6 +160,27 @@ function Home({ userInfo }: Props) {
 
             {/* Contenido principal */}
             <div style={{ padding: '10px', maxWidth: '1200px', margin: '70px auto 0 auto' }}>
+                
+                {/* 🟢 NOTIFICACIÓN DE ÉXITO (Condicional, se sitúa arriba de StockAlert) */}
+                {successMessage && (
+                    <div style={{
+                        padding: '6px 15px',
+                        marginBottom: '20px',
+                        backgroundColor: '#d4edda', // Fondo verde claro
+                        color: '#155724',           // Texto verde oscuro
+                        border: '1px solid #c3e6cb',
+                        borderRadius: '5px',
+                        fontWeight: 'bold',
+                        textAlign: 'left',
+                        fontSize: '0.8rem',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                    }}>
+                        <span role="img" aria-label="check" style={{ marginRight: '8px' }}>✅</span>
+                        {successMessage}
+                    </div>
+                )}
+
+                {/* STOCK ALERT se renderiza incondicionalmente debajo de la alerta de éxito */}
                 <StockAlert lowStockItems={lowStockItems} />
 
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
@@ -166,8 +205,9 @@ function Home({ userInfo }: Props) {
                     ))}
                 </div>
 
-                {activePanel === 'entrada' && <ItemForm onItemCreated={handleReload} />}
-                {activePanel === 'salida' && <ItemEgresoForm onItemUpdated={handleReload} />}
+                {/* 🟢 Reemplazar handleReload por handleSuccess en los formularios */}
+                {activePanel === 'entrada' && <ItemForm onItemCreated={handleSuccess} />}
+                {activePanel === 'salida' && <ItemEgresoForm onItemUpdated={handleSuccess} />}
                 {activePanel === 'tabla' && <ItemList key={reloadFlag} />} 
                 {activePanel === 'movimientos' && <HistorialMovimientos key={reloadFlag} />}
             </div>
