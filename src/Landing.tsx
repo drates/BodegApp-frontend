@@ -57,7 +57,7 @@ const styles = {
         fontFamily: 'Alata, sans-serif',
     },
     heroSubtitle: {
-        fontSize: '1.15rem',
+        fontSize: '1.05rem',
         marginBottom: '30px',
         fontWeight: '300' as const,
     },
@@ -66,9 +66,9 @@ const styles = {
         color: '#ffffff',
         border: 'none',
         padding: '15px 30px',
-        fontSize: '1.1rem',
+        fontSize: '1.15rem',
         fontWeight: '700' as const,
-        borderRadius: '5px',
+        borderRadius: '25px',
         cursor: 'pointer',
         textDecoration: 'none',
         marginBottom: '10px',
@@ -84,7 +84,7 @@ const styles = {
         padding: '12px 28px',
         fontSize: '1rem',
         fontWeight: '600' as const,
-        borderRadius: '5px',
+        borderRadius: '19px',
         cursor: 'pointer',
         textDecoration: 'none',
         width: '80%',
@@ -135,7 +135,7 @@ const Landing = () => {
                     Maneja tu inventario en segundos. <br/> Desde el celular. <br/>Gratis.
                 </h1>
                 <p style={styles.heroSubtitle}>
-                    Ahorra tiempo y evita ventas perdidas por falta de stock.
+                    Ahorra tiempo y olvida las ventas perdidas por falta de stock.
                 </p>
                 <a href="#registro" style={styles.ctaButtonPrimary}>
                     ✅ Empieza ahora
