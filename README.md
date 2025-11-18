@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+## 2. README del Frontend (React / TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+```markdown
+# 🎨 BodegApp Cliente Web
 
-Currently, two official plugins are available:
+Aplicación web de gestión de inventario desarrollada con React y TypeScript.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-l
-## React Compiler
+## 🚀 Stack Tecnológico
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-m
-## Expanding the ESLint configuration
-ll
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-b 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **Framework:** React.js
+* **Lenguaje:** TypeScript
+* **Build Tool/Dev Server:** Vite
+* **Estilo:** CSS plano / Componentes funcionales (Hooks)
+* **Librerías Clave:** `axios`, `jwt-decode`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 💻 Configuración para Desarrollo Local
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
+1.  **Instalar Dependencias:**
+    ```bash
+    npm install
+    ```
+2.  **Configurar Proxy (CRÍTICO):** El archivo `vite.config.ts` utiliza un proxy para redirigir las llamadas a `/api/*` al servidor de desarrollo del Backend (`http://localhost:5000`).
+    
+    *Asegúrate de que el Backend de .NET esté corriendo en `http://localhost:5000`.*
+    ```typescript
+    // Contenido clave en vite.config.ts
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5000/', 
+          changeOrigin: true, 
+          secure: false,
+        },
       },
-      // other options...
     },
-  },
-])
-```
+    ```
+3.  **Ejecutar el Cliente:**
+    ```bash
+    npm run dev
+    ```
+    El cliente se abrirá en `http://localhost:5173`.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🌐 Manejo de Sesión y Comunicación
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### `utils/authFetch.ts`
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Este archivo es el *middleware* central de comunicación con la API.
+
+* **Token Injection:** Lee el token JWT de `localStorage` y lo añade al encabezado de todas las peticiones: `Authorization: Bearer [token]`.
+* **Base URL:** Usa la variable `API_BASE_URL` definida en `config.ts` (que lee de las variables de entorno de Vite).
+* **Manejo de 401:** Si la API devuelve un código de estado `401 Unauthorized`, automáticamente remueve el token de `localStorage` (limpia la sesión) y notifica un error.
+
+### `App.tsx` (Control de Flujo)
+
+El componente principal maneja el estado de la sesión:
+
+1.  **Validación:** Al cargar, intenta llamar a `/api/auth/me` usando `authFetch` para validar el token guardado.
+2.  **Redirección:**
+    * **Sin sesión (o token inválido):** Muestra el componente `<Landing />`, que contiene el `<AuthPanel />` (Login/Registro).
+    * **Con sesión (`userInfo`):** Muestra `<Home />` o `<SuperAdminPanel />` dependiendo del `Role` obtenido del token.
+
+### `AuthPanel.tsx` (Login/Registro)
+
+* Utiliza `authFetch` para comunicarse con `/api/auth/login` y `/api/auth/register`.
+* **CRÍTICO:** Las llamadas a autenticación usan el flag `skipAuthCheck: true` en `authFetch` para evitar que el *middleware* de `authFetch` purgue el token ante un `401` de credenciales inválidas, permitiendo manejar el error de forma manual en el componente.
+
+## 💾 Despliegue
+
+La aplicación está diseñada para ser desplegada como una **Azure Static Web App (SWA)**.
+
+* **Producción:** La URL de la API se define en la variable de entorno `VITE_API_BASE_URL` (e.g., configurada en el entorno de la SWA), que apunta a la API de .NET.
+* **Ruteo:** El archivo `staticwebapp.config.json` define la regla de `navigationFallback` para que las rutas del cliente (ej: `/home`) redirijan a `index.html` (Single Page Application, SPA).
