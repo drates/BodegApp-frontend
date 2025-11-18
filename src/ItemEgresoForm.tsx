@@ -96,7 +96,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
 
     const submitButtonStyle: React.CSSProperties = {
         padding: '0.6rem 1.2rem',
-        backgroundColor: '#0077cc',
+        backgroundColor: '#0466C9',
         color: '#fff',
         border: 'none',
         fontSize: '0.85',
@@ -108,7 +108,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
         <div>
             <form onSubmit={handleSubmit} style={formStyle}>
                 <h2 style={{
-                    color: '#007bff',
+                    color: '#0466C9',
                     borderBottom: '1px solid #cbced0ff',
                     paddingBottom: '10px',
                     marginBottom: '20px',
@@ -118,7 +118,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
                     Registrar Salida
                 </h2>
 
-                {isLoading && <div style={{ marginBottom: '1rem', color: '#007bff', fontWeight: 'bold' }}><Spinner /> Registrando salida...</div>}
+                {isLoading && <div style={{ marginBottom: '1rem', color: '#0466C9', fontWeight: 'bold' }}><Spinner /> Registrando salida...</div>}
 
                 <div style={inputContainerStyle}>
                     <label style={labelStyle}>Código del Producto:</label>

@@ -85,7 +85,7 @@ function Home({ userInfo }: Props) {
         left: 0,
         right: 0,
         zIndex: 1000,
-        background: '#0077cc',
+        background: '#0466C9',
         color: '#fff',
         padding: '0.5rem 0.6rem',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
@@ -98,13 +98,13 @@ function Home({ userInfo }: Props) {
 <div style={{ flex: '1 1 auto', minWidth: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
   <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
     <img 
-      src="/logo.svg" 
+      src="/logoheader.svg" 
       alt="Logo BodegaFeliz"
-      style={{ width: '25px', height: '25px', verticalAlign: 'middle' }}
+      style={{ width: '24px', height: '24px', verticalAlign: 'middle', marginRight: '3px' }}
     />
-    <h1 style={{ margin: 0, fontSize: '1.15rem', lineHeight: '1' }}>BodegaFeliz</h1>
+    <h1 style={{ margin: 0, fontFamily: 'Alata, sans-serif', fontSize: '1.35rem', lineHeight: '1' }}>BodegaFeliz</h1>
   </div>
-  <p style={{ margin: 0, fontSize: '0.70rem', opacity: 0.9 }}>
+  <p style={{ margin: 0, fontSize: '0.70rem', opacity: 0.9, paddingTop: '5px' }}>
     Inventario simple y eficiente
   </p>
 </div>
@@ -126,8 +126,8 @@ function Home({ userInfo }: Props) {
                 style={{
                     padding: '4px 8px',
                     fontSize: '0.60rem',
-                    backgroundColor: '#7b0a16ff',
-                    color: 'white',
+                    backgroundColor: '#d1d1d1ff',
+                    color: '#0466C9',
                     border: 'none',
                     borderRadius: '4px',
                     alignSelf: 'flex-end',
@@ -153,9 +153,9 @@ function Home({ userInfo }: Props) {
                                 height: '40px',
                                 width: '120px',
                                 fontSize: '90%',
-                                backgroundColor: activePanel === btn.key ? '#0077cc' : '#ffffff',
-                                color: activePanel === btn.key ? '#ffffff' : '#0077cc',
-                                border: '3px solid #0077cc',
+                                backgroundColor: activePanel === btn.key ? '#0466C9' : '#ffffff',
+                                color: activePanel === btn.key ? '#ffffff' : '#0466C9',
+                                border: '3px solid #0466C9',
                                 borderRadius: '3px',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease'

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import Login from './Login';
+//import Login from './Login';
 import Home from './Home';
 import SuperAdminPanel from './SuperAdminPanel';
 import Spinner from './Spinner';
 import { authFetch } from './utils/authFetch';
+// 💡 IMPORTAR EL NUEVO COMPONENTE LANDING
+import Landing from './landing'; 
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,9 @@ const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
       try {
         const res = await authFetch('/api/auth/me');
-        if (!res.ok) throw new Error('401');
+        // NOTA: Si la sesión expira (401), authFetch internamente
+        // remueve el token y lanza un error.
+        if (!res.ok) throw new Error('401'); 
         const data = await res.json();
         setUserInfo(data);
       } catch {
@@ -48,8 +52,14 @@ const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     );
   }
 
-  if (!userInfo) return <Login />;
-  if (userInfo.role === 'Superadmin') return <SuperAdminPanel userInfo={userInfo} />;
+  // 🚨 CAMBIO CLAVE: Si no hay usuario, redirigir a Landing.tsx
+  if (!userInfo) return <Landing />;
+  
+  // NOTA: Asegúrate de que el rol 'Superadmin' en TypeScript
+  // coincida con el casing en tu backend ('Superadmin' vs 'SuperAdmin').
+  // En tu código actual dice 'SuperAdmin', lo mantengo.
+  if (userInfo.role === 'SuperAdmin') return <SuperAdminPanel userInfo={userInfo} />;
+  
   return <Home userInfo={userInfo} />;
 }
 
