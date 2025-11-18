@@ -50,20 +50,20 @@ const styles = {
         position: 'relative' as const, // 🚨 NECESARIO: Agregado para que el header flotante (position: absolute) funcione dentro de esta sección.
     },
     heroTitle: {
-        fontSize: '1.6rem', // Grande en móvil
+        fontSize: '1.5rem', // Grande en móvil
         fontWeight: '600' as const, // Máxima visibilidad
         marginBottom: '10px',
         marginTop: '20px',
         fontFamily: 'Alata, sans-serif',
     },
     heroSubtitle: {
-        fontSize: '1.2rem',
+        fontSize: '1.15rem',
         marginBottom: '30px',
         fontWeight: '300' as const,
     },
     ctaButtonPrimary: {
-        backgroundColor: '#ffc107', // Amarillo/Naranja (Alto Contraste)
-        color: '#333',
+        backgroundColor: '#EF7860', // Amarillo/Naranja (Alto Contraste)
+        color: '#ffffff',
         border: 'none',
         padding: '15px 30px',
         fontSize: '1.1rem',
@@ -132,10 +132,10 @@ const Landing = () => {
                 {/* FIN DEL HEADER AÑADIDO */}
 
                 <h1 style={styles.heroTitle}>
-                    Ordena tu inventario en segundos. <br/> Desde el celular. <br/>Gratis.
+                    Maneja tu inventario en segundos. <br/> Desde el celular. <br/>Gratis.
                 </h1>
                 <p style={styles.heroSubtitle}>
-                    Control total de tu stock, entradas y salidas en segundos.
+                    Ahorra tiempo y evita ventas perdidas por falta de stock.
                 </p>
                 <a href="#registro" style={styles.ctaButtonPrimary}>
                     ✅ Empieza ahora
@@ -147,13 +147,13 @@ const Landing = () => {
 
             {/* 2. BENEFICIOS CLAVE (Vectorial) */}
             <section style={styles.section}>
-                <h2>Beneficios Clave para tu Negocio</h2>
+                <h2>Beneficios Clave para tu Negocio:</h2>
                 
                 {/* Beneficio 1: 100% Móvil (Libertad Operativa) */}
                 <div style={styles.benefitCard}>
                     <div style={styles.icon}>📱</div>
                     <h3 style={styles.benefitTitle}>Tu Bodega en el Bolsillo</h3>
-                    <p>Maneja entradas, salidas y reportes desde cualquier lugar.</p>
+                    <p>Maneja entradas, salidas y visualización de inventario y movimientos desde cualquier lugar.</p>
                 </div>
 
                 {/* Beneficio 2: Ultra Rápido (Alivio del Caos) */}
@@ -166,21 +166,21 @@ const Landing = () => {
                 {/* Beneficio 3: Gratis y Sin Tarjeta (Cero Riesgo) */}
                 <div style={styles.benefitCard}>
                     <div style={styles.icon}>🔒</div>
-                    <h3 style={styles.benefitTitle}>Preuba con Cero Riesgo</h3>
+                    <h3 style={styles.benefitTitle}>Prueba con Cero Riesgo</h3>
                     <p>La versión Beta es **gratis**. No te pedimos tarjeta.</p>
                 </div>
 
                 {/* Beneficio 4 Opcional: Visualización Clara (Confianza) */}
                  <div style={styles.benefitCard}>
                     <div style={styles.icon}>👁️</div>
-                    <h3 style={styles.benefitTitle}>Visualización Clara por Lotes</h3>
-                    <p>Todo tu inventario, claro y ordenado por lotes. Ten confianza en tus datos de stock en todo momento.</p>
+                    <h3 style={styles.benefitTitle}>Visualización Clara y Alertas automáticas</h3>
+                    <p>Todo tu inventario ordenado por lotes y con alertas. No pierdes más ventas por falta de stock.</p>
                 </div>
             </section>
 
             {/* 3. SECCIÓN DE REGISTRO/LOGIN (Anclada para el CTA) */}
             <section id="registro" style={styles.registerSection}>
-                <h2>Crea tu cuenta gratis y empieza a ordenar tu stock</h2>
+                <h2>Crea tu cuenta gratis y ordena tu bodega en segundos</h2>
                 
                 {/* Aquí inyectamos el componente de autenticación */}
                 <AuthPanel /> 
