@@ -106,7 +106,7 @@ function ItemForm({ onItemCreated }: Props) {
     const labelStyle: React.CSSProperties = {
         display: 'block',
         marginBottom: '0.25rem',
-        fontSize: '16px'
+        fontSize: '15px'
     };
 
     const inputElementStyle: React.CSSProperties = {
@@ -121,9 +121,9 @@ function ItemForm({ onItemCreated }: Props) {
         padding: '0.6rem 1.2rem',
         backgroundColor: '#0466C9',
         color: '#fff',
-        fontSize: '0.85',
+        fontSize: '1',
         border: 'none',
-        borderRadius: '4px',
+        borderRadius: '15px',
         cursor: isLoading ? 'not-allowed' : 'pointer'
     };
 

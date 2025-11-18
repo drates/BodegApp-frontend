@@ -160,7 +160,7 @@ const Landing = () => {
                 <div style={styles.benefitCard}>
                     <div style={styles.icon}>⚡</div>
                     <h3 style={styles.benefitTitle}>Control en Segundos</h3>
-                    <p>Registra o revisa un movimiento en segundos. Ahorra tiempo y evita errores.</p>
+                    <p>Registra o revisa movimientos en segundos. Ahorra tiempo y evita errores.</p>
                 </div>
 
                 {/* Beneficio 3: Gratis y Sin Tarjeta (Cero Riesgo) */}
@@ -172,9 +172,9 @@ const Landing = () => {
 
                 {/* Beneficio 4 Opcional: Visualización Clara (Confianza) */}
                  <div style={styles.benefitCard}>
-                    <div style={styles.icon}>👁️</div>
-                    <h3 style={styles.benefitTitle}>Visualización Clara y Alertas automáticas</h3>
-                    <p>Todo tu inventario ordenado por lotes y con alertas. No pierdes más ventas por falta de stock.</p>
+                    <div style={styles.icon}>👁️💵</div>
+                    <h3 style={styles.benefitTitle}>Visualización Clara y Alertas Automáticas</h3>
+                    <p>Todo tu inventario ordenado por lotes y con alertas. Olvida las ventas perdidas por falta de stock.</p>
                 </div>
             </section>
 

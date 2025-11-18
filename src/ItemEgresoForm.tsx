@@ -83,7 +83,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
     const labelStyle: React.CSSProperties = {
         display: 'block',
         marginBottom: '0.25rem',
-        fontSize: '16px'
+        fontSize: '15px'
     };
 
     const inputElementStyle: React.CSSProperties = {
@@ -99,8 +99,8 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
         backgroundColor: '#0466C9',
         color: '#fff',
         border: 'none',
-        fontSize: '0.85',
-        borderRadius: '4px',
+        fontSize: '1',
+        borderRadius: '15px',
         cursor: isLoading ? 'not-allowed' : 'pointer'
     };
 
@@ -133,7 +133,7 @@ function ItemEgresoForm({ onItemUpdated }: Props) {
 
                 <div style={{ display: 'flex', gap: '20px' }}>
                     <div style={{ ...inputContainerStyle, flex: 1 }}>
-                        <label style={labelStyle}>Unidades por caja:</label>
+                        <label style={labelStyle}>Unid. por caja:</label>
                         <input
                             type="number"
                             placeholder="Unidades"
