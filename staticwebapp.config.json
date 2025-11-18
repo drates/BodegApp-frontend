@@ -1,4 +1,9 @@
 {
+  "mimeTypes": {
+    ".js": "text/javascript",
+    ".mjs": "text/javascript"
+  },
+
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
