@@ -76,7 +76,7 @@ const DocumentosLegales = ({ onClose }: Props) => {
                 </p>
 
                 <p>
-                    **2. Descripción del Servicio.** BodegaFeliz proporciona una plataforma de gestión de inventario para pequeñas y medianas empresas, permitiendo registrar la entrada, salida y stock de productos en bodegas vinculadas a la cuenta del usuario.
+                    **2. Descripción del Servicio.** BodegaFeliz (versión Beta) proporciona una plataforma de gestión de inventario para pequeñas y medianas empresas, permitiendo registrar la entrada, salida y stock de productos en bodegas vinculadas a la cuenta del usuario.
                 </p>
 
                 <p>
@@ -89,6 +89,10 @@ const DocumentosLegales = ({ onClose }: Props) => {
 
                 <p>
                     **5. Limitación de Responsabilidad.** La aplicación se proporciona "tal cual" y BodegaFeliz no ofrece garantías, expresas o implícitas, sobre el funcionamiento ininterrumpido o libre de errores de la plataforma. La responsabilidad por daños indirectos o incidentales es limitada.
+                </p>
+
+                <p>
+                    **6. Cambios a los Términos y Condiciones.** Los Términos y Condiciones pueden cambiar sin previo aviso.
                 </p>
 
                 <p style={{ textAlign: 'right', fontSize: '0.85rem' }}>
