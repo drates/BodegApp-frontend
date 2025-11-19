@@ -1,21 +1,30 @@
 import React from 'react';
 
-const DocumentosLegales = () => {
-    // Estilo base para consistencia
-    const containerStyle: React.CSSProperties = {
+// 🚨 Definir las propiedades del modal (solo necesita una función para cerrarse)
+type Props = {
+    onClose: () => void;
+};
+
+// 🚨 El componente ahora acepta las props
+const DocumentosLegales = ({ onClose }: Props) => {
+    // Estilo base para consistencia (Ajustado para el modal)
+    const contentStyle: React.CSSProperties = { 
         maxWidth: '900px',
-        margin: '50px auto',
-        padding: '20px 30px',
+        margin: '0 auto', 
+        padding: '20px 20px',
+        fontSize: '0.85rem',
         fontFamily: 'Arial, sans-serif',
-        lineHeight: '1.7',
-        backgroundColor: '#f9f9f9',
+        lineHeight: '1.2',
+        backgroundColor: '#fff', // Fondo blanco para el contenido del modal
         borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        boxShadow: '0 2px 8px rgba(0,0,0,0.2)', 
+        minHeight: '100%', 
+        boxSizing: 'border-box',
     };
 
     const sectionStyle: React.CSSProperties = {
         marginBottom: '40px',
-        paddingTop: '20px', // Espacio para el ancla
+        paddingTop: '20px', 
         borderBottom: '1px solid #ddd',
     };
 
@@ -26,46 +35,64 @@ const DocumentosLegales = () => {
         marginBottom: '20px',
     };
 
+    // 🚨 NUEVO ESTILO: Botón de cierre para el modal (posición fija respecto al modal)
+    const closeButtonStyle: React.CSSProperties = {
+        // Posicionamiento absoluto dentro del contenido del modal
+        position: 'absolute' as const, 
+        top: '20px',
+        right: '20px',
+        background: 'none',
+        border: 'none',
+        fontSize: '1.5rem',
+        cursor: 'pointer',
+        color: '#0466C9',
+        zIndex: 110, 
+    }
+
+
     return (
-        <div style={containerStyle}>
+        // 🚨 Aplicar el estilo de contenido al div principal (para scroll y formato)
+        <div style={contentStyle}>
+            {/* 🚨 Botón de Cierre (usa la prop onClose) */}
+            <button 
+                onClick={onClose} 
+                style={closeButtonStyle}
+                aria-label="Cerrar Documentos Legales"
+            >
+                &times;
+            </button> 
+
             <h1 style={{ textAlign: 'center', color: '#333' }}>Documentos Legales de BodegaFeliz</h1>
             <p style={{ textAlign: 'center', fontSize: '0.9rem', color: '#666' }}>
-                Última actualización: 18 de Noviembre de 2025. Utiliza el menú de navegación para ir a la sección de tu interés.
+                Última actualización: 18 de Noviembre de 2025.
             </p>
-
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginBottom: '40px', padding: '10px', backgroundColor: '#eef' }}>
-                <a href="#terminos" style={{ color: '#0466C9', textDecoration: 'none', fontWeight: 'bold' }}>
-                    Términos y Condiciones
-                </a>
-                <a href="#privacidad" style={{ color: '#0466C9', textDecoration: 'none', fontWeight: 'bold' }}>
-                    Política de Privacidad
-                </a>
-            </div>
-            
-            <hr />
 
             {/* --- SECCIÓN 1: TÉRMINOS Y CONDICIONES --- */}
             <section id="terminos" style={sectionStyle}>
                 <h2 style={titleStyle}>Términos y Condiciones de Uso</h2>
                 
                 <p>
-                    BodegaFeliz está en **versión beta de prueba**, por lo que **no se garantiza ninguna funcionalidad** ni registro de datos persistente.
+                    **1. Aceptación de los Términos.** Al utilizar la aplicación BodegaFeliz, usted acepta la totalidad de estos Términos y Condiciones. Si no está de acuerdo, por favor, no utilice nuestros servicios.
                 </p>
 
                 <p>
-                    BodegaFeliz tiene los datos respaldados en la nube, pero **no se hace responsable de su disponibilidad ni almacenaje**. Se asume que usuarios deben manejar un respaldo de información en caso de contingencia.
+                    **2. Descripción del Servicio.** BodegaFeliz proporciona una plataforma de gestión de inventario para pequeñas y medianas empresas, permitiendo registrar la entrada, salida y stock de productos en bodegas vinculadas a la cuenta del usuario.
                 </p>
 
                 <p>
-                    BodegaFeliz se reserva el derecho de hacer cambios, suspender cuentas, y tomar cualquier medida con la aplicación y datos, a discreción propia y dentro de los marcos legales respectivos.
+                    **3. Responsabilidad del Usuario.** El usuario es el único responsable de la exactitud de la información de inventario ingresada y de la confidencialidad de sus credenciales de acceso. BodegaFeliz no se hace responsable por pérdidas derivadas de errores en la carga de datos.
                 </p>
 
                 <p>
-                    Los términos y condiciones pueden **cambiar sin previo aviso**.
+                    **4. Acceso a Datos por Bodega.** Cada cuenta de usuario está vinculada a una Bodega por defecto. El sistema garantiza que cada usuario sólo puede ver y modificar los datos de inventario asociados a su propia Bodega.
+                </p>
+
+                <p>
+                    **5. Limitación de Responsabilidad.** La aplicación se proporciona "tal cual" y BodegaFeliz no ofrece garantías, expresas o implícitas, sobre el funcionamiento ininterrumpido o libre de errores de la plataforma. La responsabilidad por daños indirectos o incidentales es limitada.
                 </p>
 
                 <p style={{ textAlign: 'right', fontSize: '0.85rem' }}>
-                    <a href="#top" style={{ color: '#888' }}>[Ir arriba]</a>
+                    <a onClick={() => { /* Scroll to top logic here if needed */ }} style={{ color: '#888', cursor: 'pointer' }}>[Ir arriba]</a>
                 </p>
             </section>
 
@@ -85,13 +112,12 @@ const DocumentosLegales = () => {
                     Los datos pueden ser usados de forma **agregada y anonimizada** para otros fines.
                 </p>
                 
-                <p style={{ textAlign: 'right', fontSize: '0.85rem' }}>
-                    <a href="#top" style={{ color: '#888' }}>[Ir arriba]</a>
-                </p>
+            
             </section>
 
+            {/* 🚨 PIE DE PÁGINA: Usa la función de cierre en lugar de la redirección */}
             <p style={{ marginTop: '40px', textAlign: 'center' }}>
-                <a href="/" style={{ color: '#0466C9', textDecoration: 'none', fontWeight: 'bold' }}>← Volver al inicio</a>
+                <a onClick={onClose} style={{ color: '#0466C9', textDecoration: 'none', fontWeight: 'bold', cursor: 'pointer' }}>← Volver a la página principal</a>
             </p>
         </div>
     );

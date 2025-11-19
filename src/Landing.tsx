@@ -1,4 +1,6 @@
 import AuthPanel from './AuthPanel';
+import TerminosPrivacidad from './TerminosPrivacidad'; 
+import { useState } from 'react';
 
 // Definición de Estilos (para simplicidad, se usan estilos inline)
 // En producción, se recomienda usar CSS modules o un framework como Tailwind.
@@ -26,6 +28,32 @@ const styles = {
         margin: 0,
         fontFamily: 'Alata, sans-serif', // <-- Fuente 'Alata' aplicada
     },
+   
+   // 🚨 AÑADIR: Estilos para el Modal
+modalOverlay: {
+    position: 'fixed' as const, // Cubre toda la pantalla y no se mueve al hacer scroll
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Fondo oscuro semitransparente
+    display: 'flex' as const,
+    justifyContent: 'center' as const,
+    alignItems: 'flex-start' as const, //
+    zIndex: 100, // Debe estar por encima de todo
+    overflowY: 'auto' as const, // ✅ CORRECCIÓN: Permite scroll dentro del overlay
+    padding: '20px 0', 
+},
+modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    maxWidth: '95%',
+    margin: '0 auto',
+    width: 'calc(100% - 40px)', 
+    boxSizing: 'border-box' as const,
+    position: 'relative' as const, // Importante para posicionar el botón de cierre dentro
+},
+   
     // FIN DE ESTILOS AÑADIDOS
     
     container: {
@@ -115,6 +143,9 @@ const styles = {
 };
 
 const Landing = () => {
+   
+    const [showTermsModal, setShowTermsModal] = useState(false);
+   
     return (
         <div style={styles.container}>
             {/* 1. HERO (MÁXIMA CONVERSIÓN) */}
@@ -186,9 +217,28 @@ const Landing = () => {
                 <AuthPanel /> 
                 
                 <p style={{ marginTop: '20px', fontSize: '0.85rem', color: '#666' }}>
-                    Al registrarte, aceptas nuestros <a href="/terminos-y-condiciones" style={{ color: '#0077cc', textDecoration: 'none' }}>Términos y Condiciones</a> y la <a href="/politica-de-privacidad" style={{ color: '#0077cc', textDecoration: 'none' }}>Política de Privacidad</a>.
+                    Al registrarte, aceptas nuestros 
+                    {/* 🚨 4. Cambiar el href por onClick */}
+                    <a 
+                        onClick={() => setShowTermsModal(true)} 
+                        style={{ color: '#0077cc', textDecoration: 'none', cursor: 'pointer' }}
+                    >
+                        Términos y Condiciones y la Política de Privacidad
+                    </a>
                 </p>
             </section>
+
+        {/* 🚨 6. Lógica para renderizar el Modal */}
+            {showTermsModal && (
+                // El Overlay cubre toda la pantalla y permite scroll si el modal es muy alto
+                <div style={styles.modalOverlay}>
+                    {/* El Contenido del Modal */}
+                    <div style={styles.modalContent}>
+                        {/* Pasar la función para cerrar el modal */}
+                        <TerminosPrivacidad onClose={() => setShowTermsModal(false)} />
+                    </div>
+                </div>
+            )}
 
         </div>
     );
