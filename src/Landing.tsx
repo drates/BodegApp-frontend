@@ -166,7 +166,7 @@ const Landing = () => {
                     Maneja tu inventario en segundos. <br/> Desde el celular. <br/>Gratis.
                 </h1>
                 <p style={styles.heroSubtitle}>
-                    Ahorra tiempo y olvida las ventas perdidas por falta de stock.
+                    Ahorra tiempo y olvida perder ventas por falta de stock.
                 </p>
                 <a href="#registro" style={styles.ctaButtonPrimary}>
                     ✅ Empieza ahora
@@ -205,7 +205,7 @@ const Landing = () => {
                  <div style={styles.benefitCard}>
                     <div style={styles.icon}>👁️💵</div>
                     <h3 style={styles.benefitTitle}>Visualización Clara y Alertas Automáticas</h3>
-                    <p>Todo tu inventario ordenado por lotes y con alertas. Olvida las ventas perdidas por falta de stock.</p>
+                    <p>Todo tu inventario por lotes y con alertas. Olvida perder dinero por quiebres de stock.</p>
                 </div>
             </section>
 
