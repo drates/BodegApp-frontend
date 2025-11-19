@@ -150,7 +150,7 @@ function AuthPanel() {
     border: 'none',
     color: '#0077cc',
     cursor: isLoading ? 'not-allowed' : 'pointer',
-    fontSize: '14px',
+    fontSize: '16px',
     marginTop: '15px',
     width: '100%',
     textAlign: 'center',
