@@ -184,7 +184,7 @@ const Landing = () => {
                 <div style={styles.benefitCard}>
                     <div style={styles.icon}>📱</div>
                     <h3 style={styles.benefitTitle}>Tu Bodega en el Bolsillo</h3>
-                    <p>Maneja entradas, salidas y visualización de inventario y movimientos desde cualquier lugar.</p>
+                    <p>Maneja entradas y salidas de stock, revisa tu inventario y movimientos de bodega, en cualquier momento y desde cualquier lugar.</p>
                 </div>
 
                 {/* Beneficio 2: Ultra Rápido (Alivio del Caos) */}
