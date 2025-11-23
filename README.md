@@ -6,7 +6,7 @@
 Aplicación web de gestión de inventario desarrollada con React y TypeScript.
 
 ## 🚀 Stack Tecnológico
-
+ 
 * **Framework:** React.js
 * **Lenguaje:** TypeScript
 * **Build Tool/Dev Server:** Vite
