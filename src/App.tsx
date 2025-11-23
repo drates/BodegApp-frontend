@@ -58,8 +58,10 @@ const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   // NOTA: Asegúrate de que el rol 'Superadmin' en TypeScript
   // coincida con el casing en tu backend ('Superadmin' vs 'SuperAdmin').
   // En tu código actual dice 'SuperAdmin', lo mantengo.
-  if (userInfo.role === 'SuperAdmin') return <SuperAdminPanel userInfo={userInfo} />;
-  
+if (userInfo.role.toLowerCase() === 'superadmin') {
+      return <SuperAdminPanel userInfo={userInfo} />;
+  }
+    
   return <Home userInfo={userInfo} />;
 }
 
