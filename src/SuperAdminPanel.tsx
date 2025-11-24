@@ -4,188 +4,192 @@ import { useState, useEffect } from 'react';
 import { authFetch } from './utils/authFetch';
 import Spinner from './Spinner';
 
-// 🟢 CORRECCIÓN 1: Interfaz actualizada para coincidir con el JSON del Backend.
-interface MetricsData {
-    usuariosPorDia: { fecha: string; nuevos: number }[]; 
-    movimientosPorDia: { fecha: string; total: number; unidadesEgresadas: number; cajasEgresadas: number }[];
-    resumenGlobal: { 
-        usuariosTotales: number; 
-        productosTotales: number; 
-        cajasTotales: number; 
-        unidadesTotales: number; 
-        movimientosTotales: number; 
-        ingresosTotales: number; 
-        egresosTotales: number; 
-    }; 
-    tablaPorUsuario: {
-        userId: string;
-        userName: string;
-        productos: number;
-        cajas: number;
-        unidades: number;
-        unidadesEgresadas30d: number;
-    }[];
+// 1. INTERFACES ACTUALIZADAS para el nuevo DTO del Backend
+interface AggregatedMetric {
+    date: string;
+    newUsersCount: number;
+    dailyActiveUsersCount: number;
+    totalProductsCount: number;
+    totalBoxesInStock: number;
+    dailyUnitsMoved: number;
+    userMetricsJson: string; 
+    // Añadir el resto de las métricas que el backend calcule (e.g., TablaPorUsuario)
+    // Para simplificar, asumiremos que el backend ahora solo devuelve el objeto AggregatedMetric, 
+    // y tú lo adaptas aquí. Por ahora, nos centraremos en las métricas de alto nivel.
 }
 
-type Props = {
-    userInfo: {
-        email: string;
-        role: string;
-        companyName: string;
-    };
-};
+interface MetricsResponse {
+    metrics: AggregatedMetric | null;
+    isUpdating: boolean; // El flag de cálculo en segundo plano
+}
 
-function SuperAdminPanel({ userInfo }: Props) {
-    const [metrics, setMetrics] = useState<MetricsData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+// Componente para mostrar un valor de métrica (opcional, pero ayuda a la limpieza)
+interface MetricCardProps {
+    title: string;
+    value: number | string | null | undefined;
+}
 
-    // 🟢 FUNCIÓN DE LOGOUT AÑADIDA
-    const logout = () => {
-        localStorage.removeItem('token');
-        // Esto fuerza a App.tsx a re-evaluar la sesión y mostrar el Login
-        window.location.href = '/'; 
+const MetricCard: React.FC<MetricCardProps> = ({ title, value }) => (
+    <div style={{ 
+        padding: '15px', 
+        border: '1px solid #ccc', 
+        borderRadius: '5px', 
+        textAlign: 'center', 
+        minWidth: '150px',
+        backgroundColor: '#f9f9f9'
+    }}>
+        <p style={{ margin: '0 0 5px 0', fontSize: '0.8rem', color: '#666' }}>{title}</p>
+        <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#0077cc' }}>
+            {value !== null && value !== undefined ? value.toLocaleString() : 'N/A'}
+        </h3>
+    </div>
+);
+
+
+function SuperAdminPanel() {
+    const [metricsData, setMetricsData] = useState<MetricsResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false); // Estado para controlar el refresh
+
+    // Función principal para obtener las métricas
+    const fetchMetrics = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const res = await authFetch('/api/superadmin/metricas');
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Error al obtener métricas: ${res.status} - ${errorText}`);
+            }
+            
+            const data: MetricsResponse = await res.json();
+            setMetricsData(data);
+            setIsUpdating(data.isUpdating); // 🔥 CRÍTICO: Guardar el estado de actualización
+
+        } catch (err) {
+            console.error(err);
+            setError('Error al cargar las métricas. Intenta recargar.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    // Si el usuario no es SuperAdmin, redirigir o mostrar un mensaje
-    if (userInfo.role !== 'Superadmin') {
-        return (
-            <div className="p-6 text-center text-red-600 font-bold">
-                Acceso Denegado. Se requiere rol de Super Administrador.
-            </div>
-        );
-    }
+    const logout = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/'; // Redirige a la landing page
+    };
 
-    useEffect(() => {
-        const fetchMetrics = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                // Corregida la ruta en authFetch a /api/superadmin/metricas (ya estaba correcta)
-                const response = await authFetch("/api/superadmin/metricas", {
-                    method: 'GET'
-                });
+    // 💡 useEffect 1: Carga inicial al montar
+    useEffect(() => {
+        fetchMetrics();
+    }, []);
 
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: No se pudieron cargar las métricas.`);
-                }
-                
-                const data: MetricsData = await response.json(); 
-                setMetrics(data);
+    // 💡 useEffect 2: Lógica de REFRESH AUTOMÁTICO (Solución limpia)
+    useEffect(() => {
+        // Usamos el tipo estándar de navegador para evitar el error 'NodeJS.Timeout'
+        let timer: number | undefined; 
+        
+        if (isUpdating) {
+            console.log("Cálculo en curso. Programando re-fetch en 30 segundos...");
+            
+            // Usamos window.setTimeout y window.clearTimeout para mayor claridad
+            timer = window.setTimeout(() => {
+                fetchMetrics(); 
+            }, 30000); // Reintentar cada 30 segundos
 
-            } catch (err: any) {
-                console.error("Error al obtener métricas:", err);
-                setError(err.message || "Fallo al conectar con el servicio de métricas.");
-            } finally {
-                setLoading(false);
-            }
-        };
+        }
+        
+        // Función de limpieza para asegurar que el timer se detenga si el componente se desmonta 
+        // o si isUpdating cambia a false.
+        return () => {
+            if (timer) {
+                window.clearTimeout(timer);
+            }
+        };
+    }, [isUpdating]); // Dependencia CRÍTICA: se ejecuta cada vez que 'isUpdating' cambia
 
-        fetchMetrics();
-    }, []);
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                <Spinner />
+            </div>
+        );
+    }
 
-    if (loading) {
-        return <Spinner />;
-    }
+    if (error) {
+        return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
+    }
+    
+    const metrics = metricsData?.metrics;
 
-    if (error) {
-        return <div className="p-6 text-center text-red-600 font-bold">{error}</div>;
-    }
+    return (
+        <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
 
-    // Función auxiliar para formatear la fecha a DD/MM/AAAA
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-CL');
-    };
-
-    return (
-        <div className="p-8 bg-gray-50 min-h-screen">
-            {/* 🟢 HEADER CON BOTÓN DE CERRAR SESIÓN */}
-            <div className="flex justify-between items-center mb-6 border-b pb-2">
-                <h1 className="text-3xl font-extrabold text-gray-900">Panel de Super Administración</h1>
-                <button
-                    onClick={logout}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <button 
+                    onClick={logout} 
+                    style={{
+                        backgroundColor: '#adababff', // Color rojo para destacar
+                        color: 'black',
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }}
                 >
-                    Cerrar Sesión
+                    Cerrar Sesión 🔒
                 </button>
             </div>
-            
-            {/* --- RESUMEN GLOBAL --- */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-blue-600">
-                    <h2 className="text-xl font-semibold mb-2 text-blue-600">Resumen Global</h2>
-                    <p>Total de Usuarios: **{metrics?.resumenGlobal?.usuariosTotales ?? 'N/A'}**</p>
-                    <p>Total de Productos: **{metrics?.resumenGlobal?.productosTotales ?? 'N/A'}**</p>
-                    <p>Total de Cajas en Stock: **{metrics?.resumenGlobal?.cajasTotales ?? 'N/A'}**</p>
-                    <p>Total de Unidades en Stock: **{metrics?.resumenGlobal?.unidadesTotales ?? 'N/A'}**</p>
-                </div>
-                
-                <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-600">
-                    <h2 className="text-xl font-semibold mb-2 text-green-600">Transacciones y Valor</h2>
-                    <p>Total de Movimientos (30D): **{metrics?.resumenGlobal?.movimientosTotales ?? 'N/A'}**</p>
-                    <p>Total de Ingresos (Cajas): **{metrics?.resumenGlobal?.ingresosTotales ?? 'N/A'}**</p>
-                    <p>Total de Egresos (Cajas): **{metrics?.resumenGlobal?.egresosTotales ?? 'N/A'}**</p>
-                </div>
+            <h2>Panel de Superadmin - Métricas Globales</h2>
+            
+            <hr />
 
-                {/* --- Usuarios por Día --- */}
-                <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-purple-600 lg:col-span-2">
-                    <h2 className="text-xl font-semibold mb-2 text-purple-600">Crecimiento de Usuarios (Adquisición)</h2>
-                    <p className="mb-3">**Nuevos Usuarios por Día (Últimos 5 registros):**</p>
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                                <th className="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nuevos Usuarios</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {metrics?.usuariosPorDia.slice(-5).map((u, index) => ( // Muestra los últimos 5 días
-                                <tr key={index}>
-                                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900">{formatDate(u.fecha)}</td>
-                                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900 font-bold">{u.nuevos}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {/* 💡 Mensaje de Actualización (visible si IsUpdating es true) */}
+            {isUpdating && metrics && (
+                <div style={{ 
+                    padding: '15px', 
+                    marginBottom: '20px', 
+                    backgroundColor: '#fff3cd', 
+                    color: '#856404', 
+                    border: '1px solid #ffeeba',
+                    borderRadius: '5px',
+                    fontWeight: 'bold'
+                }}>
+                    ⏳ Calculando métricas históricas en segundo plano. Los datos mostrados son del día **{new Date(metrics.date).toLocaleDateString()}**. El panel se actualizará automáticamente en unos segundos.
+                </div>
+            )}
+            
+            <h3 style={{ marginTop: '30px' }}>Resumen General (Data Agregada)</h3>
+            
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+                <MetricCard 
+                    title="Usuarios Nuevos (Último Día Calc.)" 
+                    value={metrics?.newUsersCount} 
+                />
+                <MetricCard 
+                    title="Usuarios Activos (DAU)" 
+                    value={metrics?.dailyActiveUsersCount} 
+                />
+                <MetricCard 
+                    title="Unidades Movidas Diariamente" 
+                    value={metrics?.dailyUnitsMoved} 
+                />
+                <MetricCard 
+                    title="Productos Totales (Snapshot)" 
+                    value={metrics?.totalProductsCount} 
+                />
+                <MetricCard 
+                    title="Cajas Totales en Stock (Snapshot)" 
+                    value={metrics?.totalBoxesInStock} 
+                />
+            </div>
 
-            {/* --- Tabla por Usuario (Segmentación) --- */}
-            <div className="bg-white p-6 rounded-lg shadow-xl mt-8">
-                <h2 className="text-xl font-semibold mb-4 text-indigo-700">Segmentación por Usuario (Heavy Users)</h2>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-indigo-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Productos</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Cajas Total</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidades Total</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Egresos (30D)</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {/* Ordenamos por Cajas de forma descendente para destacar a los "Heavy Users" */}
-                            {metrics?.tablaPorUsuario
-                                .sort((a, b) => b.cajas - a.cajas)
-                                .map((u) => (
-                                <tr key={u.userId} className={u.cajas > 5 ? 'bg-yellow-50' : ''}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{u.userName}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{u.productos}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">{u.cajas}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{u.unidades}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-semibold">{u.unidadesEgresadas30d}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {/* Aquí puedes añadir la tabla o gráficos si las incluyes en el modelo AggregatedMetric */}
 
-            <p className="text-gray-500 mt-8">Datos cargados con éxito desde el Backend de Producción.</p>
-        </div>
-    );
+        </div>
+    );
 }
 
 export default SuperAdminPanel;
