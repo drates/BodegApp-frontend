@@ -85,7 +85,7 @@ function HistorialMovimientos() {
   }
 
   return (
-    <div style={{ padding: '0.1rem', marginTop: '-35px' }}>
+    <div style={{ padding: '0.1rem', marginTop: '-35px', width: '100%', boxSizing: 'border-box'}}>
       <h2 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', color: '#0077cc' }}>
         🔄️Movimientos recientes
       </h2>

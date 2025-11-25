@@ -95,7 +95,13 @@ function Home({ userInfo }: Props) {
     }
 
     return (
-        <div style={{ fontFamily: 'Arial, sans-serif' }}>
+        <div style={{ 
+            fontFamily: 'Arial, sans-serif',
+            display: 'flex', 
+            flexDirection: 'column', 
+            minHeight: '100vh',
+            overflowX: 'hidden' 
+        }}>
     {/* Header fijo */}
     <div style={{
         position: 'fixed',
@@ -159,8 +165,15 @@ function Home({ userInfo }: Props) {
     </div>
 
             {/* Contenido principal */}
-            <div style={{ padding: '10px', maxWidth: '1200px', margin: '70px auto 0 auto' }}>
-                
+<div style={{ 
+                padding: '10px', 
+                maxWidth: '1200px', 
+                paddingTop: '70px', // Compensar la altura del Header fijo
+                margin: '0 auto',   // Quita el margin-top
+                flexGrow: 1,         // Empuja el footer hacia abajo
+                width: '100%',
+                boxSizing: 'border-box'
+            }}>                
                 {/* 🟢 NOTIFICACIÓN DE ÉXITO (Condicional, se sitúa arriba de StockAlert) */}
                 {successMessage && (
                     <div style={{
@@ -183,14 +196,15 @@ function Home({ userInfo }: Props) {
                 {/* STOCK ALERT se renderiza incondicionalmente debajo de la alerta de éxito */}
                 <StockAlert lowStockItems={lowStockItems} />
 
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap', width: '100%'}}>
                     {navButtons.map(btn => (
                         <button
                             key={btn.key}
                             onClick={() => togglePanel(btn.key)}
                             style={{
                                 height: '40px',
-                                width: '120px',
+                                width: '120px',                               
+                                boxSizing: 'border-box',
                                 fontSize: '90%',
                                 backgroundColor: activePanel === btn.key ? '#0466C9' : '#ffffff',
                                 color: activePanel === btn.key ? '#ffffff' : '#0466C9',
@@ -213,7 +227,7 @@ function Home({ userInfo }: Props) {
                         backgroundColor: '#f7f7f7',
                         border: '1px solid #e0e0e0',
                         borderRadius: '8px',
-                        textAlign: 'center',
+                        textAlign: 'left',
                         color: '#333'
                     }}>
                         <h2 style={{ color: '#0466C9', fontSize: '1.15rem', marginBottom: '15px' }}>
@@ -258,9 +272,8 @@ function Home({ userInfo }: Props) {
         color: '#555',
         textAlign: 'center',
         padding: '10px 10px',
-        marginTop: '30px', // Espacio para separarlo del contenido
+        marginTop: '15px', // Espacio para separarlo del contenido
         borderTop: '1px solid #e0e0e0',
-        marginBottom: '-10px',
         fontSize: '0.8rem'
     }}>
         <p style={{ margin: '0 0 10px 0', fontFamily: 'Alata, sans-serif' }}>
