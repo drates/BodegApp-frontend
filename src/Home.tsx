@@ -205,12 +205,85 @@ function Home({ userInfo }: Props) {
                     ))}
                 </div>
 
+                {/* Bloque de Onboarding / Bienvenida */}
+                {activePanel === null && (
+                    <div style={{
+                        //marginTop: '10px',
+                        padding: '10px 30px',
+                        backgroundColor: '#f7f7f7',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '8px',
+                        textAlign: 'center',
+                        color: '#333'
+                    }}>
+                        <h2 style={{ color: '#0466C9', fontSize: '1.15rem', marginBottom: '15px' }}>
+                            👋 ¡Bienvenido/a a tu BodegaFeliz!
+                        </h2>
+                        
+                        <ul style={{ 
+                            listStyleType: 'none', 
+                            padding: 0, 
+                            fontSize: '0.9rem',
+                            maxWidth: '500px', 
+                            margin: '0 auto',
+                            textAlign: 'left'
+                        }}>
+                            <li style={{ marginBottom: '10px' }}>
+                                Entrada: <i>ingresa stock a la bodega</i>.
+                            </li>
+                            <li style={{ marginBottom: '10px' }}>
+                                Salida: <i>registra salida de stock</i>.
+                            </li>
+                            <li style={{ marginBottom: '10px' }}>
+                                Ver Inventario: <i>revisa tu inventario actualizado</i>.
+                            </li>
+                            <li style={{ marginBottom: '20px' }}>
+                                Movimientos: <i>revisa movimientos de inventario recientes</i>.
+                            </li>
+                        </ul>
+                        
+                    </div>
+                )}
+
                 {/* 🟢 Reemplazar handleReload por handleSuccess en los formularios */}
                 {activePanel === 'entrada' && <ItemForm onItemCreated={handleSuccess} />}
                 {activePanel === 'salida' && <ItemEgresoForm onItemUpdated={handleSuccess} />}
                 {activePanel === 'tabla' && <ItemList key={reloadFlag} />} 
                 {activePanel === 'movimientos' && <HistorialMovimientos key={reloadFlag} />}
             </div>
+            {/* 🟢 FOOTER (Nuevo Bloque) */}
+    <div style={{
+        backgroundColor: '#f1f1f1',
+        color: '#555',
+        textAlign: 'center',
+        padding: '10px 10px',
+        marginTop: '30px', // Espacio para separarlo del contenido
+        borderTop: '1px solid #e0e0e0',
+        fontSize: '0.8rem'
+    }}>
+        <p style={{ margin: '0 0 10px 0', fontFamily: 'Alata, sans-serif' }}>
+            &copy; {new Date().getFullYear()} BodegaFeliz
+        </p>
+        <div>
+            <a 
+                href="https://docs.google.com/forms/d/e/1FAIpQLSct-DzTzT6FdMVF-_mjIwC4WchBtIyLCHxk17Del4sbJ8x87A/viewform?usp=publish-editor" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ color: '#0466C9', textDecoration: 'none', margin: '0 10px', fontWeight: 'bold' }}
+            >
+                Envíanos Feedback
+            </a>
+            |
+            <a 
+                href="https://docs.google.com/forms/d/e/1FAIpQLSetAoQZESZN5q1EoZ71VxdN_7rqKDYCrpymITE1i5JcX5iHsw/viewform?usp=dialog" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ color: '#0466C9', textDecoration: 'none', margin: '0 10px', fontWeight: 'bold' }}
+            >
+                Contacto
+            </a>
+        </div>
+    </div>
         </div>
     );
 }
