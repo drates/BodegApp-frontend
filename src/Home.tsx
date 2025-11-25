@@ -251,6 +251,7 @@ function Home({ userInfo }: Props) {
                 {activePanel === 'tabla' && <ItemList key={reloadFlag} />} 
                 {activePanel === 'movimientos' && <HistorialMovimientos key={reloadFlag} />}
             </div>
+            
             {/* 🟢 FOOTER (Nuevo Bloque) */}
     <div style={{
         backgroundColor: '#f1f1f1',
@@ -259,6 +260,7 @@ function Home({ userInfo }: Props) {
         padding: '10px 10px',
         marginTop: '30px', // Espacio para separarlo del contenido
         borderTop: '1px solid #e0e0e0',
+        marginBottom: '-10px',
         fontSize: '0.8rem'
     }}>
         <p style={{ margin: '0 0 10px 0', fontFamily: 'Alata, sans-serif' }}>
