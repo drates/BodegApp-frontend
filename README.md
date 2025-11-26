@@ -14,7 +14,7 @@ Aplicación web de gestión de inventario desarrollada con React y TypeScript.
 * **Librerías Clave:** `axios`, `jwt-decode`
 
 ## 💻 Configuración para Desarrollo Local
-
+ 
 1.  **Instalar Dependencias:**
     ```bash
     npm install
