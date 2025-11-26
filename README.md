@@ -10,7 +10,7 @@ Aplicación web de gestión de inventario desarrollada con React y TypeScript.
 * **Framework:** React.js
 * **Lenguaje:** TypeScript
 * **Build Tool/Dev Server:** Vite
-* **Estilo:** CSS plano / Componentes funcionales (Hooks)
+* **Estilo:** CSS plano / Componentes funcionales (Hooks)!
 * **Librerías Clave:** `axios`, `jwt-decode`
 
 ## 💻 Configuración para Desarrollo Local
