@@ -17,7 +17,7 @@ Aplicación web de gestión de inventario desarrollada con React y TypeScript.
 
 1.  **Instalar Dependencias:**
     ```bash
-    npm install
+    npm install 
     ```
 2.  **Configurar Proxy (CRÍTICO):** El archivo `vite.config.ts` utiliza un proxy para redirigir las llamadas a `/api/*` al servidor de desarrollo del Backend (`http://localhost:5000`).
     
