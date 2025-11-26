@@ -63,6 +63,7 @@ const styles = {
     container: {
         fontFamily: 'Arial, sans-serif',
         color: '#333',
+        backgroundColor: '#e6f2ff', // Un azul claro de fondo para destacar la sección de registro
         minHeight: '100vh',
         paddingTop: '0', // Eliminar padding superior
     },
@@ -83,8 +84,7 @@ const styles = {
     },
     
     registerSection: {
-        backgroundColor: '#e6f2ff', // Un azul claro de fondo para destacar la sección de registro
-        padding: '10px 20px',
+        padding: '20px 20px',
         textAlign: 'center' as const,
     },
 };
@@ -123,7 +123,7 @@ const Landing = ({ defaultMode }: LandingProps) => { // 🟢 Aceptar la prop aqu
                         onClick={() => setShowTermsModal(true)} 
                         style={{ color: '#0077cc', textDecoration: 'none', cursor: 'pointer' }}
                     >
-                        Términos y Condiciones y la Política de Privacidad
+                        Términos y Condiciones y la Política de Privacidad.
                     </a>
                 </p>
             </section>
