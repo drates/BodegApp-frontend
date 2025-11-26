@@ -7,9 +7,23 @@ import { authFetch } from './utils/authFetch';
 // 💡 IMPORTAR EL NUEVO COMPONENTE LANDING
 import Landing from './Landing'; 
 
+// 🟢 NUEVA FUNCIÓN: Leer parámetros de URL para activar modo de authpanel
+const getInitialMode = (): 'login' | 'register' => {
+  // Solo ejecuta esto en el lado del cliente (navegador)
+  if (typeof window === 'undefined') return 'login';
+  
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('mode');
+  
+  // Si 'mode=register', retorna 'register'. Por defecto, 'login'.
+  if (mode === 'register') return 'register';
+  return 'login';
+};
+
 function App() {
   const [loading, setLoading] = useState(true);
-type UserInfo = {
+  const initialMode = getInitialMode();
+  type UserInfo = {
   email: string;
   role: string;
   companyName: string;
@@ -53,7 +67,7 @@ const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   }
 
   // 🚨 CAMBIO CLAVE: Si no hay usuario, redirigir a Landing.tsx
-  if (!userInfo) return <Landing />;
+  if (!userInfo) return <Landing defaultMode={initialMode} />;
   
   // NOTA: Asegúrate de que el rol 'Superadmin' en TypeScript
   // coincida con el casing en tu backend ('Superadmin' vs 'SuperAdmin').
