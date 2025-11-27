@@ -129,7 +129,7 @@ function Home({ userInfo }: Props) {
     <h1 style={{ margin: 0, fontFamily: 'Alata, sans-serif', fontSize: '1.35rem', lineHeight: '1' }}>BodegaFeliz</h1>
   </div>
   <p style={{ margin: 0, fontSize: '0.70rem', opacity: 0.9, paddingTop: '5px' }}>
-    Inventario simple y eficiente
+    Inventario web ultra-rápido
   </p>
 </div>
 
